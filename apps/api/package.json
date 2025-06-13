@@ -4,14 +4,14 @@
   "private": true,
   "main": "dist/index.js",
   "scripts": {
+    "postinstall": "cd ../../packages/database && npx prisma generate",
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {
-    "@icatalyst/database": "file:../../packages/database",
-    "@icatalyst/types": "file:../../packages/types",
+    "@prisma/client": "^5.22.0",
     "express": "^4.18.0",
     "cors": "^2.8.5",
     "helmet": "^7.1.0",
@@ -36,6 +36,7 @@
     "typescript": "^5.0.0",
     "eslint": "^8.0.0",
     "@typescript-eslint/parser": "^6.0.0",
-    "@typescript-eslint/eslint-plugin": "^6.0.0"
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "prisma": "^5.22.0"
   }
 }
