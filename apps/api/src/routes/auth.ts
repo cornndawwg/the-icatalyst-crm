@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 
 // Import Prisma from the database package
-const { prisma } = require('../../../packages/database/src/index.ts')
+const { prisma } = require('@icatalyst/database')
 
 const router = Router()
 

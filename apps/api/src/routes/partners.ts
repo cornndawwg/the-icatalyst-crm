@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { authenticateToken, AuthenticatedRequest } from '../middleware/auth'
 
 // Import Prisma from the database package
-const { prisma } = require('../../../packages/database/src/index.ts')
+const { prisma } = require('@icatalyst/database')
 
 const router = Router()
 
