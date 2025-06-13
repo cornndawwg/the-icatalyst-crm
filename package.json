@@ -8,9 +8,10 @@
       "install:database": "cd packages/database && npm install",
       "install:all": "npm run install:database && npm run install:api",
       "generate": "cd packages/database && npx prisma generate",
+      "generate:api": "cd apps/api && npx prisma generate --schema=../../packages/database/prisma/schema.prisma",
       "build:api": "cd apps/api && npx tsc",
       "build": "npm run install:all && npm run generate && npm run build:api",
-      "start": "cd apps/api && npx tsx src/index.ts",
+      "start": "npm run generate:api && cd apps/api && npx tsx src/index.ts",
       "db:push": "cd packages/database && npx prisma db push"
     },
     "engines": {
