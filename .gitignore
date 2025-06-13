@@ -134,3 +134,26 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Additional for iCatalyst CRM
+.env
+.env.local
+.env.production
+
+# Prisma
+packages/database/migrations/
+*.db
+*.sqlite
+
+# Railway
+.railway/
+
+# VS Code
+.vscode/
+
+# MacOS
+.DS_Store
+
+# Logs
+logs/
+*.log
