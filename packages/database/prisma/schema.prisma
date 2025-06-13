@@ -1,14 +1,19 @@
 // iCatalyst CRM v2 - Partnership-Focused Database Schema
 // Core focus: Partnership development for Smart Home Integrators
 
-generator client {
-  provider = "prisma-client-js"
-}
+  generator client {
+    provider = "prisma-client-js"
+  }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+  Replace it with:
+  generator client {
+    provider = "prisma-client-js"
+  }
+
+  generator api_client {
+    provider = "prisma-client-js"
+    output   = "../../apps/api/node_modules/.prisma/client"
+  }
 
 // ==========================================
 // MULTI-TENANT ORGANIZATION SYSTEM
