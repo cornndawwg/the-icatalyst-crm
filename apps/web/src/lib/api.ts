@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // API client configuration
 const api = axios.create({
-  baseURL: 'https://the-icatalyst-crm-icatalyst.up.railway.app/api',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://the-icatalyst-crm-icatalyst.up.railway.app/api',
   headers: {
     'Content-Type': 'application/json',
   },

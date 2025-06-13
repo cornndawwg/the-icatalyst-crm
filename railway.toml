@@ -1,0 +1,9 @@
+# Railway configuration for API service (default)
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "cd apps/api && npx tsx src/index.ts"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"

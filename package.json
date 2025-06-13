@@ -5,11 +5,15 @@
   "private": true,
   "scripts": {
     "install:api": "cd apps/api && npm install",
+    "install:web": "cd apps/web && npm install",
     "install:database": "cd packages/database && npm install", 
-    "install:all": "npm run install:database && npm run install:api",
+    "install:all": "npm run install:database && npm run install:api && npm run install:web",
     "generate": "cd packages/database && npx prisma generate",
     "build": "npm run install:all",
+    "build:api": "npm run install:database && npm run install:api",
+    "build:web": "npm run install:web && cd apps/web && npm run build",
     "start": "cd apps/api && npx tsx src/index.ts",
+    "start:web": "cd apps/web && npm start",
     "db:push": "cd packages/database && npx prisma db push"
   },
   "engines": {
