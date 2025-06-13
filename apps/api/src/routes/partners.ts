@@ -3,10 +3,9 @@ import { z } from 'zod'
 import { authenticateToken, AuthenticatedRequest } from '../middleware/auth'
 
 // Import Prisma from the database package
-const { PrismaClient } = require('../../packages/database/node_modules/@prisma/client')
+const { prisma } = require('../../../packages/database/src/index.ts')
 
 const router = Router()
-const prisma = new PrismaClient()
 
 // Use authentication middleware for all partner routes
 router.use(authenticateToken as any)

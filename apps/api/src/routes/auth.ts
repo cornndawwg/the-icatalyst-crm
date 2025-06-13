@@ -4,10 +4,9 @@ import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 
 // Import Prisma from the database package
-const { PrismaClient } = require('../../packages/database/node_modules/@prisma/client')
+const { prisma } = require('../../../packages/database/src/index.ts')
 
 const router = Router()
-const prisma = new PrismaClient()
 
 // Validation schemas
 const registerSchema = z.object({

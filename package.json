@@ -8,8 +8,8 @@
     "install:database": "cd packages/database && npm install", 
     "install:all": "npm run install:database && npm run install:api",
     "generate": "cd packages/database && npx prisma generate",
-    "build": "npm run install:all && npm run generate",
-    "start": "npm run generate && cd apps/api && npx tsx src/index.ts",
+    "build": "npm run install:all",
+    "start": "cd apps/api && npx tsx src/index.ts",
     "db:push": "cd packages/database && npx prisma db push"
   },
   "engines": {
