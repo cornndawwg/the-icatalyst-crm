@@ -1,10 +1,11 @@
-import { Router } from 'express'
+import { Router, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
-import { prisma } from '@icatalyst/database'
+import { PrismaClient } from '@prisma/client'
 
 const router = Router()
+const prisma = new PrismaClient()
 
 // Validation schemas
 const registerSchema = z.object({
@@ -21,7 +22,7 @@ const loginSchema = z.object({
 })
 
 // Register new organization and user
-router.post('/register', async (req, res) => {
+router.post('/register', async (req: Request, res: Response): Promise<void> => {
   try {
     const data = registerSchema.parse(req.body)
     
@@ -31,28 +32,30 @@ router.post('/register', async (req, res) => {
     })
     
     if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' })
+      res.status(400).json({ error: 'User already exists' })
+      return
     }
     
     // Hash password
     const hashedPassword = await bcrypt.hash(data.password, 12)
     
     // Create organization and user in transaction
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: any) => {
       const organization = await tx.organization.create({
         data: {
           name: data.companyName,
-          subdomain: data.companyName.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+          plan: 'starter',
+          domain: data.companyName.toLowerCase().replace(/[^a-z0-9]/g, '-'),
         }
       })
       
       const user = await tx.user.create({
         data: {
           email: data.email,
-          password: hashedPassword,
+          passwordHash: hashedPassword,
           firstName: data.firstName,
           lastName: data.lastName,
-          role: 'OWNER',
+          role: 'owner',
           organizationId: organization.id,
         }
       })
@@ -87,7 +90,8 @@ router.post('/register', async (req, res) => {
     })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.errors })
+      res.status(400).json({ error: 'Invalid input', details: error.errors })
+      return
     }
     console.error('Registration error:', error)
     res.status(500).json({ error: 'Registration failed' })
@@ -95,7 +99,7 @@ router.post('/register', async (req, res) => {
 })
 
 // Login user
-router.post('/login', async (req, res) => {
+router.post('/login', async (req: Request, res: Response): Promise<void> => {
   try {
     const data = loginSchema.parse(req.body)
     
@@ -106,13 +110,15 @@ router.post('/login', async (req, res) => {
     })
     
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' })
+      res.status(401).json({ error: 'Invalid credentials' })
+      return
     }
     
     // Check password
-    const isValidPassword = await bcrypt.compare(data.password, user.password)
+    const isValidPassword = await bcrypt.compare(data.password, user.passwordHash)
     if (!isValidPassword) {
-      return res.status(401).json({ error: 'Invalid credentials' })
+      res.status(401).json({ error: 'Invalid credentials' })
+      return
     }
     
     // Generate JWT
@@ -142,7 +148,8 @@ router.post('/login', async (req, res) => {
     })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.errors })
+      res.status(400).json({ error: 'Invalid input', details: error.errors })
+      return
     }
     console.error('Login error:', error)
     res.status(500).json({ error: 'Login failed' })
@@ -150,11 +157,12 @@ router.post('/login', async (req, res) => {
 })
 
 // Get current user
-router.get('/me', async (req, res) => {
+router.get('/me', async (req: Request, res: Response): Promise<void> => {
   try {
     const token = req.headers.authorization?.replace('Bearer ', '')
     if (!token) {
-      return res.status(401).json({ error: 'No token provided' })
+      res.status(401).json({ error: 'No token provided' })
+      return
     }
     
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any
@@ -165,7 +173,8 @@ router.get('/me', async (req, res) => {
     })
     
     if (!user) {
-      return res.status(401).json({ error: 'User not found' })
+      res.status(401).json({ error: 'User not found' })
+      return
     }
     
     res.json({

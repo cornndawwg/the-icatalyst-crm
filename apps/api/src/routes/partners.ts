@@ -1,9 +1,10 @@
 import { Router, Request, Response } from 'express'
 import { z } from 'zod'
-import { prisma } from '../index'
+import { PrismaClient } from '@prisma/client'
 import { authenticateToken, AuthenticatedRequest } from '../middleware/auth'
 
 const router = Router()
+const prisma = new PrismaClient()
 
 // Use authentication middleware for all partner routes
 router.use(authenticateToken as any)
