@@ -1,7 +1,9 @@
 import { Router, Request, Response } from 'express'
 import { z } from 'zod'
-import { PrismaClient } from '@prisma/client'
 import { authenticateToken, AuthenticatedRequest } from '../middleware/auth'
+
+// Import Prisma from the database package
+const { PrismaClient } = require('../../packages/database/node_modules/@prisma/client')
 
 const router = Router()
 const prisma = new PrismaClient()

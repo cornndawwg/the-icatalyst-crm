@@ -2,7 +2,9 @@ import { Router, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
-import { PrismaClient } from '@prisma/client'
+
+// Import Prisma from the database package
+const { PrismaClient } = require('../../packages/database/node_modules/@prisma/client')
 
 const router = Router()
 const prisma = new PrismaClient()
