@@ -1,0 +1,13 @@
+ {
+   "name": "the-icatalyst-crm",
+   "version": "1.0.0",
+   "description": "Partnership-focused CRM for Smart Home Integrators",
+   "private": true,
+   "scripts": {
+     "build": "cd apps/api && npm install && npm run build",
+     "start": "cd apps/api && npm start"
+   },
+   "engines": {
+     "node": ">=18.0.0"
+   }
+ }

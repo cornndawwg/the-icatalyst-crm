@@ -1,0 +1,418 @@
+// iCatalyst CRM v2 - Partnership-Focused Database Schema
+// Core focus: Partnership development for Smart Home Integrators
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// MULTI-TENANT ORGANIZATION SYSTEM
+// ==========================================
+
+model Organization {
+  id          String   @id @default(uuid())
+  name        String
+  domain      String?  @unique
+  plan        String   // starter, professional, enterprise
+  status      String   @default("active") // active, suspended, cancelled
+  
+  // Settings
+  settings    Json?    // Organization-specific settings
+  
+  // Relationships - all data scoped to organization
+  users       User[]
+  customers   Customer[]
+  partners    Partner[]     // Our core differentiator
+  projects    Project[]
+  proposals   Proposal[]
+  campaigns   EmailCampaign[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([domain])
+  @@index([status])
+}
+
+model User {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  email          String       @unique
+  passwordHash   String
+  firstName      String
+  lastName       String
+  role           String       // owner, admin, user, readonly
+  status         String       @default("active") // active, inactive, invited
+  
+  lastLoginAt    DateTime?
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  
+  @@index([organizationId])
+  @@index([email])
+}
+
+// ==========================================
+// PARTNERSHIP SYSTEM - CORE DIFFERENTIATOR
+// ==========================================
+
+model Partner {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  // Partner Type - Our key categorization
+  type           String       // interior-designer, builder, architect
+  status         String       @default("prospect") // prospect, active, inactive, unresponsive
+  
+  // Company Information
+  companyName    String
+  website        String?
+  
+  // Primary Contact
+  contactName    String
+  contactTitle   String?
+  email          String
+  phone          String?
+  
+  // Business Profile
+  specialties    String[]     // JSON array: luxury, commercial, residential, etc.
+  projectTypes   String[]     // single-family, multi-family, commercial, renovation
+  avgProjectValue Float?      // Average project value they work on
+  projectsPerYear Int?        // How many projects they do annually
+  
+  // Geographic Information
+  serviceAreas   String[]     // Cities/regions they serve
+  address        String?
+  city           String?
+  state          String?
+  zipCode        String?
+  
+  // Relationship Tracking
+  source         String?      // how we found them: referral, search, event, etc.
+  firstContact   DateTime?    // When we first reached out
+  lastContact    DateTime?    // Last interaction date
+  nextFollowUp   DateTime?    // Scheduled next follow-up
+  
+  // Relationship Scoring (0-100)
+  relationshipScore Float     @default(0)
+  responseRate     Float      @default(0) // % of emails/calls they respond to
+  
+  // Partnership Performance
+  leadsGenerated   Int        @default(0) // Total leads they've sent us
+  projectsShared   Int        @default(0) // Projects we've worked together
+  totalRevenue     Float      @default(0) // Total revenue from this partnership
+  
+  // Notes and Custom Fields
+  notes            String?
+  tags             String[]   // JSON array for categorization
+  customFields     Json?      // Flexible custom data
+  
+  // Relationships
+  interactions     PartnerInteraction[]
+  leads            Lead[]     // Leads generated from this partner
+  
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  
+  @@index([organizationId, type])
+  @@index([organizationId, status])
+  @@index([relationshipScore])
+  @@index([nextFollowUp])
+}
+
+model PartnerInteraction {
+  id             String   @id @default(uuid())
+  partnerId      String
+  partner        Partner  @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  
+  type           String   // email, call, meeting, event, project-discussion
+  subject        String   // Brief description of interaction
+  description    String?  // Detailed notes
+  outcome        String?  // positive, neutral, negative, follow-up-needed
+  
+  // Interaction Details
+  duration       Int?     // Duration in minutes (for calls/meetings)
+  attendees      String[] // Who was involved
+  followUpNeeded Boolean  @default(false)
+  followUpDate   DateTime?
+  
+  // Metadata
+  createdBy      String   // User who logged this interaction
+  createdAt      DateTime @default(now())
+  
+  @@index([partnerId])
+  @@index([createdAt])
+  @@index([followUpDate])
+}
+
+// ==========================================
+// CUSTOMER MANAGEMENT - SIMPLIFIED
+// ==========================================
+
+model Customer {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  // Basic Information
+  type           String       // residential, commercial, high-net-worth
+  status         String       // prospect, active, completed, inactive
+  
+  firstName      String
+  lastName       String
+  company        String?
+  email          String
+  phone          String
+  
+  // Address
+  address        String?
+  city           String?
+  state          String?
+  zipCode        String?
+  
+  // Lead Source Tracking
+  source         String?      // How they found us
+  sourcePartner  String?      // If from a partner, which one
+  
+  // Relationships
+  properties     Property[]
+  projects       Project[]
+  proposals      Proposal[]
+  leads          Lead[]       // If they started as a lead
+  
+  // Metadata
+  notes          String?
+  tags           String[]
+  customFields   Json?
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  
+  @@index([organizationId, status])
+  @@index([organizationId, email])
+  @@index([sourcePartner]) // Track partnership effectiveness
+}
+
+model Property {
+  id         String   @id @default(uuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  name       String   // "Main Residence", "Vacation Home", etc.
+  type       String   // single-family, condo, commercial, etc.
+  
+  // Address
+  address    String
+  city       String
+  state      String
+  zipCode    String
+  
+  // Property Details
+  squareFootage Float?
+  bedrooms      Int?
+  bathrooms     Int?
+  yearBuilt     Int?
+  
+  // Smart Home Details
+  existingSystems String[] // What they already have
+  
+  // Relationships
+  projects   Project[]
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  @@index([customerId])
+}
+
+// ==========================================
+// LEAD MANAGEMENT - PARTNERSHIP FOCUSED
+// ==========================================
+
+model Lead {
+  id             String       @id @default(uuid())
+  organizationId String
+  
+  // Lead Information
+  firstName      String
+  lastName       String
+  email          String
+  phone          String?
+  company        String?
+  
+  // Project Information
+  projectType    String       // new-construction, renovation, upgrade
+  projectValue   Float?       // Estimated project value
+  timeline       String?      // ASAP, 1-3 months, 3-6 months, 6+ months
+  
+  // Lead Source - KEY FOR PARTNERSHIP TRACKING
+  source         String       // partner, website, referral, advertising
+  partnerId      String?      // If from a partner
+  partner        Partner?     @relation(fields: [partnerId], references: [id], onDelete: SetNull)
+  
+  // Lead Status
+  status         String       @default("new") // new, contacted, qualified, proposal-sent, closed-won, closed-lost
+  
+  // Follow-up
+  lastContact    DateTime?
+  nextFollowUp   DateTime?
+  
+  // Conversion
+  convertedToCustomer Boolean   @default(false)
+  customerId     String?
+  customer       Customer?    @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  
+  // Notes
+  notes          String?
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  
+  @@index([organizationId, status])
+  @@index([partnerId]) // Track partner effectiveness
+  @@index([nextFollowUp])
+}
+
+// ==========================================
+// PROJECT MANAGEMENT - SIMPLIFIED
+// ==========================================
+
+model Project {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  name           String
+  description    String?
+  status         String       // planning, in-progress, completed, on-hold, cancelled
+  
+  // Project Details
+  projectType    String       // new-install, upgrade, service, design-only
+  startDate      DateTime?
+  endDate        DateTime?
+  estimatedValue Float?
+  
+  // Relationships
+  customerId     String
+  customer       Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  propertyId     String?
+  property       Property?    @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  
+  proposals      Proposal[]
+  
+  // Simple Milestone Tracking
+  milestones     Json?        // Simple JSON array of milestones
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  
+  @@index([organizationId, status])
+  @@index([customerId])
+}
+
+// ==========================================
+// PROPOSAL SYSTEM - AI ENHANCED
+// ==========================================
+
+model Proposal {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  name           String
+  description    String?
+  status         String       // draft, sent, viewed, approved, declined, expired
+  
+  // AI Generation
+  generatedBy    String       // manual, ai-assisted, voice-to-text
+  aiPrompt       String?      // Original prompt for AI generation
+  
+  // Pricing Tiers
+  goodTierTotal    Float?
+  betterTierTotal  Float?
+  bestTierTotal    Float?
+  recommendedTier  String?    // good, better, best
+  
+  // Customer/Project Links
+  customerId     String?
+  customer       Customer?    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  projectId      String?
+  project        Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  
+  // Proposal Content
+  items          ProposalItem[]
+  
+  // Tracking
+  validUntil     DateTime?
+  sentAt         DateTime?
+  viewedAt       DateTime?
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  
+  @@index([organizationId, status])
+  @@index([customerId])
+}
+
+model ProposalItem {
+  id          String   @id @default(uuid())
+  proposalId  String
+  proposal    Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  
+  name        String
+  description String?
+  category    String   // equipment, labor, design, installation
+  
+  quantity    Int      @default(1)
+  unitPrice   Float
+  totalPrice  Float
+  
+  tier        String   // good, better, best, all
+  sortOrder   Int      @default(0)
+  
+  @@index([proposalId])
+}
+
+// ==========================================
+// EMAIL MARKETING - PARTNERSHIP FOCUSED
+// ==========================================
+
+model EmailCampaign {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  name           String
+  subject        String
+  content        String       // HTML content
+  
+  // Campaign Type
+  type           String       // partner-outreach, customer-nurture, newsletter
+  targetAudience String       // designers, builders, architects, customers
+  
+  // Scheduling
+  status         String       // draft, scheduled, sent, completed
+  scheduledFor   DateTime?
+  sentAt         DateTime?
+  
+  // Performance
+  recipients     Int          @default(0)
+  opens          Int          @default(0)
+  clicks         Int          @default(0)
+  responses      Int          @default(0)
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  
+  @@index([organizationId, type])
+  @@index([status])
+}
