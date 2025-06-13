@@ -1,10 +1,10 @@
-import { Router } from 'express'
-import { authenticateToken } from '../middleware/auth'
+import { Router, Request, Response } from 'express'
+import { authenticateToken, AuthenticatedRequest } from '../middleware/auth'
 import Mailgun from 'mailgun.js'
 import FormData from 'form-data'
 
 const router = Router()
-router.use(authenticateToken)
+router.use(authenticateToken as any)
 
 // Initialize Mailgun
 const mailgun = new Mailgun(FormData)
@@ -14,7 +14,7 @@ const mg = mailgun.client({
 })
 
 // Send test email
-router.post('/test', async (req, res) => {
+router.post('/test', async (req: Request, res: Response): Promise<void> => {
   try {
     const { to, subject = 'iCatalyst CRM Test Email' } = req.body
     
@@ -49,7 +49,7 @@ router.post('/test', async (req, res) => {
 })
 
 // Placeholder for email campaign routes
-router.get('/campaigns', (req, res) => {
+router.get('/campaigns', async (req: Request, res: Response): Promise<void> => {
   res.json({ message: 'Email campaign routes coming soon' })
 })
 

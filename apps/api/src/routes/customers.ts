@@ -1,11 +1,11 @@
-import { Router } from 'express'
+import { Router, Request, Response } from 'express'
 import { authenticateToken } from '../middleware/auth'
 
 const router = Router()
-router.use(authenticateToken)
+router.use(authenticateToken as any)
 
 // Placeholder for customer management routes
-router.get('/', (req, res) => {
+router.get('/', async (req: Request, res: Response): Promise<void> => {
   res.json({ message: 'Customer routes coming soon' })
 })
 

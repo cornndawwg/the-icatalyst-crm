@@ -1,0 +1,20 @@
+{
+  "name": "the-icatalyst-crm",
+  "version": "1.0.0",
+  "description": "Partnership-focused CRM for Smart Home Integrators",
+  "private": true,
+  "scripts": {
+    "install:api": "cd apps/api && npm install",
+    "install:database": "cd packages/database && npm install",
+    "install:all": "npm run install:database && npm run install:api",
+    "build:database": "cd packages/database && npx prisma generate",
+    "build:api": "cd apps/api && npm run build",
+    "build": "npm run install:all && npm run build:database && npm run build:api",
+    "start": "cd apps/api && npm start",
+    "db:push": "cd packages/database && npx prisma db push",
+    "db:studio": "cd packages/database && npx prisma studio"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

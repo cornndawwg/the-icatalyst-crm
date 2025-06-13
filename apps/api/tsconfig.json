@@ -10,20 +10,17 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "../../",
+    "baseUrl": ".",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
     "removeComments": true,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "resolveJsonModule": true,
-    "paths": {
-      "@icatalyst/database": ["../../packages/database/src"],
-      "@icatalyst/types": ["../../packages/types/src"]
-    }
+    "resolveJsonModule": true
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*",
+    "../../packages/database/src/**/*"
+  ],
   "exclude": ["node_modules", "dist"]
 }

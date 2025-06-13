@@ -1,12 +1,13 @@
-import { Router } from 'express'
+import { Router, Request, Response } from 'express'
 import { z } from 'zod'
-import { prisma } from '@icatalyst/database'
-import { authenticateToken } from '../middleware/auth'
+import { PrismaClient } from '@prisma/client'
+import { authenticateToken, AuthenticatedRequest } from '../middleware/auth'
 
 const router = Router()
+const prisma = new PrismaClient()
 
 // Use authentication middleware for all partner routes
-router.use(authenticateToken)
+router.use(authenticateToken as any)
 
 // Validation schemas
 const createPartnerSchema = z.object({
@@ -23,9 +24,9 @@ const createPartnerSchema = z.object({
 const updatePartnerSchema = createPartnerSchema.partial()
 
 // Get all partners for organization
-router.get('/', async (req, res) => {
+router.get('/', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { organizationId } = req.user
+    const { organizationId } = (req as AuthenticatedRequest).user!
     
     const partners = await prisma.partner.findMany({
       where: { organizationId },
@@ -49,9 +50,9 @@ router.get('/', async (req, res) => {
 })
 
 // Get partner by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { organizationId } = req.user
+    const { organizationId } = (req as AuthenticatedRequest).user!
     const { id } = req.params
     
     const partner = await prisma.partner.findFirst({
@@ -72,7 +73,8 @@ router.get('/:id', async (req, res) => {
     })
     
     if (!partner) {
-      return res.status(404).json({ error: 'Partner not found' })
+      res.status(404).json({ error: 'Partner not found' })
+      return
     }
     
     res.json(partner)
@@ -83,23 +85,24 @@ router.get('/:id', async (req, res) => {
 })
 
 // Create new partner
-router.post('/', async (req, res) => {
+router.post('/', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { organizationId } = req.user
+    const { organizationId } = (req as AuthenticatedRequest).user!
     const data = createPartnerSchema.parse(req.body)
     
     const partner = await prisma.partner.create({
       data: {
         ...data,
         organizationId,
-        specialties: data.specialties?.join(',') || '',
+        specialties: data.specialties || [],
       }
     })
     
     res.status(201).json(partner)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.errors })
+      res.status(400).json({ error: 'Invalid input', details: error.errors })
+      return
     }
     console.error('Create partner error:', error)
     res.status(500).json({ error: 'Failed to create partner' })
@@ -107,9 +110,9 @@ router.post('/', async (req, res) => {
 })
 
 // Update partner
-router.put('/:id', async (req, res) => {
+router.put('/:id', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { organizationId } = req.user
+    const { organizationId } = (req as AuthenticatedRequest).user!
     const { id } = req.params
     const data = updatePartnerSchema.parse(req.body)
     
@@ -120,13 +123,13 @@ router.put('/:id', async (req, res) => {
       },
       data: {
         ...data,
-        ...(data.specialties && { specialties: data.specialties.join(',') }),
         updatedAt: new Date()
       }
     })
     
     if (partner.count === 0) {
-      return res.status(404).json({ error: 'Partner not found' })
+      res.status(404).json({ error: 'Partner not found' })
+      return
     }
     
     // Fetch updated partner
@@ -137,7 +140,8 @@ router.put('/:id', async (req, res) => {
     res.json(updatedPartner)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.errors })
+      res.status(400).json({ error: 'Invalid input', details: error.errors })
+      return
     }
     console.error('Update partner error:', error)
     res.status(500).json({ error: 'Failed to update partner' })
@@ -145,9 +149,9 @@ router.put('/:id', async (req, res) => {
 })
 
 // Delete partner
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { organizationId } = req.user
+    const { organizationId } = (req as AuthenticatedRequest).user!
     const { id } = req.params
     
     const result = await prisma.partner.deleteMany({
@@ -158,7 +162,8 @@ router.delete('/:id', async (req, res) => {
     })
     
     if (result.count === 0) {
-      return res.status(404).json({ error: 'Partner not found' })
+      res.status(404).json({ error: 'Partner not found' })
+      return
     }
     
     res.status(204).send()
@@ -169,11 +174,11 @@ router.delete('/:id', async (req, res) => {
 })
 
 // Add interaction to partner
-router.post('/:id/interactions', async (req, res) => {
+router.post('/:id/interactions', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { organizationId, userId } = req.user
+    const { organizationId, userId } = (req as AuthenticatedRequest).user!
     const { id } = req.params
-    const { type, notes, outcome } = req.body
+    const { type, subject, description, outcome } = req.body
     
     // Verify partner belongs to organization
     const partner = await prisma.partner.findFirst({
@@ -181,16 +186,18 @@ router.post('/:id/interactions', async (req, res) => {
     })
     
     if (!partner) {
-      return res.status(404).json({ error: 'Partner not found' })
+      res.status(404).json({ error: 'Partner not found' })
+      return
     }
     
     const interaction = await prisma.partnerInteraction.create({
       data: {
         partnerId: id,
         type,
-        notes,
+        subject,
+        description,
         outcome,
-        userId
+        createdBy: userId
       }
     })
     
@@ -202,7 +209,7 @@ router.post('/:id/interactions', async (req, res) => {
         relationshipScore: {
           increment: scoreIncrement
         },
-        lastContactDate: new Date()
+        lastContact: new Date()
       }
     })
     

@@ -2,19 +2,24 @@ import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 
 export interface AuthenticatedRequest extends Request {
-  user: {
+  user?: {
     userId: string
     organizationId: string
     role: string
   }
 }
 
-export const authenticateToken = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const authenticateToken = (
+  req: AuthenticatedRequest, 
+  res: Response, 
+  next: NextFunction
+): void => {
   const authHeader = req.headers.authorization
-  const token = authHeader && authHeader.split(' ')[1] // Bearer TOKEN
+  const token = authHeader && authHeader.split(' ')[1]
 
   if (!token) {
-    return res.status(401).json({ error: 'Access token required' })
+    res.status(401).json({ error: 'Access token required' })
+    return
   }
 
   try {
@@ -27,18 +32,21 @@ export const authenticateToken = (req: AuthenticatedRequest, res: Response, next
     next()
   } catch (error) {
     console.error('Token verification error:', error)
-    return res.status(403).json({ error: 'Invalid token' })
+    res.status(403).json({ error: 'Invalid token' })
+    return
   }
 }
 
 export const requireRole = (roles: string[]) => {
-  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  return (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
     if (!req.user) {
-      return res.status(401).json({ error: 'Authentication required' })
+      res.status(401).json({ error: 'Authentication required' })
+      return
     }
     
     if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ error: 'Insufficient permissions' })
+      res.status(403).json({ error: 'Insufficient permissions' })
+      return
     }
     
     next()
