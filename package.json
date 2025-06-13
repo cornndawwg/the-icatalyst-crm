@@ -1,21 +1,20 @@
- {
-    "name": "the-icatalyst-crm",
-    "version": "1.0.0",
-    "description": "Partnership-focused CRM for Smart Home Integrators",
-    "private": true,
-    "scripts": {
-      "install:api": "cd apps/api && npm install",
-      "install:database": "cd packages/database && npm install",
-      "install:all": "npm run install:database && npm run install:api",
-      "generate": "cd packages/database && npx prisma generate",
-      "generate:api": "cd apps/api && npx prisma generate --schema=../../packages/database/prisma/schema.prisma
-  --generator api_client",
-      "build:api": "cd apps/api && npx tsc",
-      "build": "npm run install:all && npm run generate && npm run build:api",
-      "start": "npm run generate:api && cd apps/api && npx tsx src/index.ts",
-      "db:push": "cd packages/database && npx prisma db push"
-    },
-    "engines": {
-      "node": ">=18.0.0"
-    }
+{
+  "name": "the-icatalyst-crm",
+  "version": "1.0.0",
+  "description": "Partnership-focused CRM for Smart Home Integrators",
+  "private": true,
+  "scripts": {
+    "install:api": "cd apps/api && npm install",
+    "install:database": "cd packages/database && npm install",
+    "install:all": "npm run install:database && npm run install:api",
+    "generate": "cd packages/database && npx prisma generate",
+    "generate:api": "cd apps/api && npx prisma generate --schema=../../packages/database/prisma/schema.prisma --generator api_client",
+    "build:api": "cd apps/api && npx tsc",
+    "build": "npm run install:all && npm run generate && npm run build:api",
+    "start": "npm run generate:api && cd apps/api && npx tsx src/index.ts",
+    "db:push": "cd packages/database && npx prisma db push"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
+}
