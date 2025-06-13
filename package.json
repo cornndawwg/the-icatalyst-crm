@@ -10,7 +10,7 @@
       "generate": "cd packages/database && npx prisma generate",
       "build:api": "cd apps/api && npx tsc",
       "build": "npm run install:all && npm run generate && npm run build:api",
-      "start": "cd apps/api && node dist/index.js",
+      "start": "cd apps/api && npx tsx src/index.ts",
       "db:push": "cd packages/database && npx prisma db push"
     },
     "engines": {
