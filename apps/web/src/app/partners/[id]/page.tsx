@@ -18,42 +18,7 @@ import {
   Minus
 } from 'lucide-react'
 import { partnersApi } from '@/lib/api'
-
-interface Interaction {
-  id: string
-  type: string
-  subject: string
-  description?: string
-  outcome: 'positive' | 'negative' | 'neutral'
-  date: string
-}
-
-interface Lead {
-  id: string
-  status: string
-  createdAt: string
-  customer?: {
-    name: string
-    email: string
-  }
-}
-
-interface Partner {
-  id: string
-  type: 'interior-designer' | 'builder' | 'architect'
-  companyName: string
-  contactName: string
-  email: string
-  phone?: string
-  website?: string
-  specialties?: string[]
-  notes?: string
-  relationshipScore: number
-  interactions?: Interaction[]
-  leads?: Lead[]
-  createdAt: string
-  updatedAt: string
-}
+import type { Partner } from '@/types'
 
 export default function PartnerDetailPage() {
   const [partner, setPartner] = useState<Partner | null>(null)

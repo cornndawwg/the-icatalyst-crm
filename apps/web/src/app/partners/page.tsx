@@ -17,18 +17,7 @@ import {
   ArrowLeft
 } from 'lucide-react'
 import { partnersApi } from '@/lib/api'
-
-interface Partner {
-  id: string
-  type: 'interior-designer' | 'builder' | 'architect'
-  companyName: string
-  contactName: string
-  email: string
-  phone?: string
-  website?: string
-  specialties?: string[]
-  createdAt: string
-}
+import type { Partner } from '@/types'
 
 export default function PartnersPage() {
   const [partners, setPartners] = useState<Partner[]>([])

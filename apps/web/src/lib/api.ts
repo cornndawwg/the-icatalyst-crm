@@ -1,4 +1,5 @@
 import axios from 'axios'
+import type { Partner } from '@/types'
 
 // API client configuration
 const api = axios.create({
@@ -43,7 +44,7 @@ export const authApi = {
 
 // Partners API functions
 export const partnersApi = {
-  getAll: async () => {
+  getAll: async (): Promise<Partner[]> => {
     const response = await api.get('/partners')
     return response.data
   },
@@ -62,7 +63,7 @@ export const partnersApi = {
     return response.data
   },
 
-  getById: async (id: string) => {
+  getById: async (id: string): Promise<Partner> => {
     const response = await api.get(`/partners/${id}`)
     return response.data
   },

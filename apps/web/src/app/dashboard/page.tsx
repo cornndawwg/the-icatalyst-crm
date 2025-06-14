@@ -19,24 +19,13 @@ import {
   X
 } from 'lucide-react'
 import { partnersApi } from '@/lib/api'
+import type { Partner, User, Organization } from '@/types'
 
 interface DashboardStats {
   totalPartners: number
   activeProjects: number
   monthlyRevenue: number
   newLeads: number
-}
-
-interface User {
-  id: string
-  email: string
-  firstName: string
-  lastName: string
-}
-
-interface Organization {
-  id: string
-  name: string
 }
 
 export default function DashboardPage() {

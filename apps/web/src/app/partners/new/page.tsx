@@ -54,7 +54,7 @@ export default function NewPartnerPage() {
     } catch (error: unknown) {
       console.error('Error creating partner:', error)
       const errorMessage = error instanceof Error && 'response' in error 
-        ? (error as { response?: { data?: { error?: string } } }).response?.data?.error 
+        ? (error as { response?: { data?: { error?: string } } }).response?.data?.error || 'Failed to create partner'
         : 'Failed to create partner'
       alert(errorMessage)
     } finally {
