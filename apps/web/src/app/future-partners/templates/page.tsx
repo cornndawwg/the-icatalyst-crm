@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { 
   ArrowLeft,
@@ -13,10 +13,8 @@ import {
   Search,
   Plus,
   Eye,
-  Edit,
   Copy,
   FileText,
-  Users,
   Building2,
   Compass,
   Sparkles,
@@ -24,7 +22,6 @@ import {
 } from 'lucide-react'
 import { 
   emailTemplates, 
-  getTemplatesByCategory, 
   type EmailTemplate 
 } from '@/lib/emailTemplates'
 
@@ -133,7 +130,7 @@ export default function EmailTemplatesPage() {
         </Card>
 
         {/* Category tabs */}
-        <Tabs value={selectedCategory} onValueChange={(value) => setSelectedCategory(value as any)}>
+        <Tabs value={selectedCategory} onValueChange={(value) => setSelectedCategory(value as 'all' | EmailTemplate['category'])}>
           <TabsList className="grid w-full grid-cols-5 mb-6">
             {categories.map((category) => (
               <TabsTrigger 

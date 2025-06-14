@@ -8,11 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
   ArrowLeft,
-  ArrowRight,
   Mail,
   Users,
   Calendar,
@@ -27,12 +24,10 @@ import {
   Info
 } from 'lucide-react'
 import { 
-  emailTemplates, 
   emailVariables,
   getTemplateById,
   processTemplate,
-  type EmailTemplate,
-  type EmailVariable
+  type EmailTemplate
 } from '@/lib/emailTemplates'
 import type { FuturePartner } from '@/types'
 
@@ -70,7 +65,7 @@ export default function NewCampaignPage() {
   const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | null>(null)
   const [showVariableHelper, setShowVariableHelper] = useState(false)
   const [previewMode, setPreviewMode] = useState(false)
-  const [sampleVariables, setSampleVariables] = useState<Record<string, string>>({
+  const [sampleVariables] = useState<Record<string, string>>({
     firstName: 'John',
     lastName: 'Smith',
     companyName: 'Acme Design Studio',
@@ -299,14 +294,14 @@ export default function NewCampaignPage() {
                     {['interior-designer', 'builder', 'architect'].map((type) => (
                       <Button
                         key={type}
-                        variant={campaignData.targetTypes.includes(type as any) ? 'default' : 'outline'}
+                        variant={campaignData.targetTypes.includes(type as ('interior-designer' | 'builder' | 'architect')) ? 'default' : 'outline'}
                         size="sm"
                         onClick={() => {
                           setCampaignData(prev => ({
                             ...prev,
-                            targetTypes: prev.targetTypes.includes(type as any)
+                            targetTypes: prev.targetTypes.includes(type as ('interior-designer' | 'builder' | 'architect'))
                               ? prev.targetTypes.filter(t => t !== type)
-                              : [...prev.targetTypes, type as any]
+                              : [...prev.targetTypes, type as ('interior-designer' | 'builder' | 'architect')]
                           }))
                         }}
                       >
@@ -326,7 +321,7 @@ export default function NewCampaignPage() {
                       <div>
                         <p className="text-sm font-medium text-blue-900">Using Template</p>
                         <p className="text-sm text-blue-700 mt-1">
-                          You&apos;re using the "{selectedTemplate.name}" template. 
+                          You&apos;re using the &quot;{selectedTemplate.name}&quot; template. 
                           You can customize the content in the next step.
                         </p>
                       </div>

@@ -23,7 +23,8 @@ import {
   Send,
   Eye,
   MousePointer,
-  Reply
+  Reply,
+  Plus
 } from 'lucide-react'
 import type { FuturePartner, EmailCampaign } from '@/types'
 
