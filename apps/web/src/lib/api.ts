@@ -100,20 +100,20 @@ export const partnersApi = {
 
 // Partner Discovery API functions (ready for Google Places + Hunter.io integration)
 export const discoveryApi = {
-  searchPartners: async (params: {
+  searchPartners: async (_params: {
     location: string
     radius: number
     types: string[]
   }) => {
     // TODO: Implement Google Places API search
-    // const response = await api.post('/discovery/search', params)
+    // const response = await api.post('/discovery/search', _params)
     // return response.data
     throw new Error('Discovery API not yet implemented')
   },
 
-  enrichPartnerContact: async (businessName: string, website?: string) => {
+  enrichPartnerContact: async (_businessName: string, _website?: string) => {
     // TODO: Implement Hunter.io contact discovery
-    // const response = await api.post('/discovery/enrich-contact', { businessName, website })
+    // const response = await api.post('/discovery/enrich-contact', { businessName: _businessName, website: _website })
     // return response.data
     throw new Error('Contact enrichment API not yet implemented')
   },
