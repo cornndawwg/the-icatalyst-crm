@@ -146,12 +146,12 @@ export const futurePartnersApi = {
 // Email Campaigns API functions
 export const emailCampaignsApi = {
   getAll: async () => {
-    const response = await api.get('/email-campaigns')
+    const response = await api.get('/email/campaigns')
     return response.data
   },
 
   getById: async (id: string) => {
-    const response = await api.get(`/email-campaigns/${id}`)
+    const response = await api.get(`/email/campaigns/${id}`)
     return response.data
   },
 
@@ -159,21 +159,22 @@ export const emailCampaignsApi = {
     name: string
     subject: string
     content: string
-    targetTypes: ('interior-designer' | 'builder' | 'architect')[]
-    recipients?: string[]
-    scheduledDate?: string
+    type?: string
+    targetAudience: string
+    status?: string
+    scheduledFor?: string
   }) => {
-    const response = await api.post('/email-campaigns', data)
+    const response = await api.post('/email/campaigns', data)
     return response.data
   },
 
-  send: async (id: string) => {
-    const response = await api.post(`/email-campaigns/${id}/send`)
+  update: async (id: string, data: any) => {
+    const response = await api.put(`/email/campaigns/${id}`, data)
     return response.data
   },
 
-  getAnalytics: async (id: string) => {
-    const response = await api.get(`/email-campaigns/${id}/analytics`)
+  send: async (id: string, recipients: string[]) => {
+    const response = await api.post(`/email/campaigns/${id}/send`, { recipients })
     return response.data
   }
 }

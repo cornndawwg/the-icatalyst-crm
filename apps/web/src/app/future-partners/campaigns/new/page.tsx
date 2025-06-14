@@ -29,6 +29,7 @@ import {
   processTemplate,
   type EmailTemplate
 } from '@/lib/emailTemplates'
+import { emailCampaignsApi } from '@/lib/api'
 import type { FuturePartner } from '@/types'
 
 interface CampaignData {
@@ -174,23 +175,64 @@ function NewCampaignContent() {
     )
   }
 
+  const saveCampaignToBackend = async (status: 'draft' | 'scheduled' | 'sent') => {
+    try {
+      // Create campaign in backend
+      const campaignPayload = {
+        name: campaignData.name,
+        subject: campaignData.subject,
+        content: campaignData.content,
+        type: 'partner-outreach',
+        targetAudience: campaignData.targetTypes.join(','),
+        status,
+        scheduledFor: status === 'scheduled' && campaignData.scheduledDate 
+          ? `${campaignData.scheduledDate}T${campaignData.scheduledTime}:00.000Z`
+          : undefined
+      }
+      
+      const campaign = await emailCampaignsApi.create(campaignPayload)
+      
+      // If sending now, trigger the send
+      if (status === 'sent') {
+        await emailCampaignsApi.send(campaign.id, campaignData.recipients)
+      }
+      
+      return campaign
+    } catch (error) {
+      console.error('Error saving campaign:', error)
+      throw new Error('Failed to save campaign')
+    }
+  }
+
   const handleSaveDraft = async () => {
-    // TODO: Save campaign as draft
-    alert('Campaign saved as draft!')
-    router.push('/future-partners')
+    try {
+      await saveCampaignToBackend('draft')
+      alert('Campaign saved as draft!')
+      router.push('/future-partners?tab=campaigns')
+    } catch (error) {
+      alert('Failed to save campaign. Please try again.')
+    }
   }
 
   const handleScheduleCampaign = async () => {
-    // TODO: Schedule campaign
-    alert('Campaign scheduled successfully!')
-    router.push('/future-partners')
+    try {
+      await saveCampaignToBackend('scheduled')
+      alert('Campaign scheduled successfully!')
+      router.push('/future-partners?tab=campaigns')
+    } catch (error) {
+      alert('Failed to schedule campaign. Please try again.')
+    }
   }
 
   const handleSendNow = async () => {
     if (confirm('Are you sure you want to send this campaign now?')) {
-      // TODO: Send campaign immediately
-      alert('Campaign sent successfully!')
-      router.push('/future-partners')
+      try {
+        await saveCampaignToBackend('sent')
+        alert('Campaign sent successfully!')
+        router.push('/future-partners?tab=campaigns')
+      } catch (error) {
+        alert('Failed to send campaign. Please try again.')
+      }
     }
   }
 

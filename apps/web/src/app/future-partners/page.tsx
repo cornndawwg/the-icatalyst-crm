@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -26,9 +26,10 @@ import {
   Reply,
   Plus
 } from 'lucide-react'
+import { emailCampaignsApi } from '@/lib/api'
 import type { FuturePartner, EmailCampaign } from '@/types'
 
-export default function FuturePartnersPage() {
+function FuturePartnersContent() {
   const [futurePartners, setFuturePartners] = useState<FuturePartner[]>([])
   const [emailCampaigns, setEmailCampaigns] = useState<EmailCampaign[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -36,6 +37,15 @@ export default function FuturePartnersPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [activeTab, setActiveTab] = useState('prospects')
   const router = useRouter()
+  const searchParams = useSearchParams()
+  
+  // Check for tab parameter
+  useEffect(() => {
+    const tab = searchParams.get('tab')
+    if (tab && ['prospects', 'campaigns', 'analytics'].includes(tab)) {
+      setActiveTab(tab)
+    }
+  }, [searchParams])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,7 +54,9 @@ export default function FuturePartnersPage() {
         // const futurePartnersData = await futurePartnersApi.getAll()
         // const campaignsData = await emailCampaignsApi.getAll()
         
-        // Mock data for now
+        // Load campaigns from backend
+        const campaignsData = await emailCampaignsApi.getAll()
+        
         const mockFuturePartners: FuturePartner[] = [
           {
             id: 'fp-1',
@@ -114,7 +126,10 @@ export default function FuturePartnersPage() {
         ]
 
         setFuturePartners(mockFuturePartners)
-        setEmailCampaigns(mockCampaigns)
+        
+        // Use real campaigns from backend, fallback to mock if empty
+        const allCampaigns = campaignsData.length > 0 ? campaignsData : mockCampaigns
+        setEmailCampaigns(allCampaigns)
       } catch (error) {
         console.error('Error fetching data:', error)
       } finally {
@@ -599,5 +614,20 @@ export default function FuturePartnersPage() {
         </Tabs>
       </main>
     </div>
+  )
+}
+
+export default function FuturePartnersPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading future partners...</p>
+        </div>
+      </div>
+    }>
+      <FuturePartnersContent />
+    </Suspense>
   )
 }
