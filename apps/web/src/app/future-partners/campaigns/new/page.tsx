@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -44,7 +44,7 @@ interface CampaignData {
   status: 'draft' | 'scheduled'
 }
 
-export default function NewCampaignPage() {
+function NewCampaignContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const templateId = searchParams.get('template')
@@ -761,5 +761,20 @@ export default function NewCampaignPage() {
         </div>
       </main>
     </div>
+  )
+}
+
+export default function NewCampaignPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading campaign editor...</p>
+        </div>
+      </div>
+    }>
+      <NewCampaignContent />
+    </Suspense>
   )
 }
