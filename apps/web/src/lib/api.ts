@@ -168,7 +168,7 @@ export const emailCampaignsApi = {
     return response.data
   },
 
-  update: async (id: string, data: any) => {
+  update: async (id: string, data: Record<string, unknown>) => {
     const response = await api.put(`/email/campaigns/${id}`, data)
     return response.data
   },

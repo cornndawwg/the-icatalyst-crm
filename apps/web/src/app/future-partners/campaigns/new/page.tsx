@@ -209,7 +209,7 @@ function NewCampaignContent() {
       await saveCampaignToBackend('draft')
       alert('Campaign saved as draft!')
       router.push('/future-partners?tab=campaigns')
-    } catch (error) {
+    } catch {
       alert('Failed to save campaign. Please try again.')
     }
   }
@@ -219,7 +219,7 @@ function NewCampaignContent() {
       await saveCampaignToBackend('scheduled')
       alert('Campaign scheduled successfully!')
       router.push('/future-partners?tab=campaigns')
-    } catch (error) {
+    } catch {
       alert('Failed to schedule campaign. Please try again.')
     }
   }
@@ -230,7 +230,7 @@ function NewCampaignContent() {
         await saveCampaignToBackend('sent')
         alert('Campaign sent successfully!')
         router.push('/future-partners?tab=campaigns')
-      } catch (error) {
+      } catch {
         alert('Failed to send campaign. Please try again.')
       }
     }
