@@ -213,4 +213,94 @@ export const discoveryApi = {
   }
 }
 
+// Settings API functions
+export const settingsApi = {
+  // Organization settings
+  getOrganization: async () => {
+    const response = await api.get('/settings/organization')
+    return response.data
+  },
+
+  updateOrganization: async (data: {
+    name?: string
+    email?: string
+    phone?: string
+    website?: string
+    address?: string
+    city?: string
+    state?: string
+    zipCode?: string
+    logo?: string
+    emailProvider?: string
+    smtpHost?: string
+    smtpPort?: string
+    smtpUsername?: string
+    smtpPassword?: string
+    smtpEncryption?: string
+    fromEmail?: string
+    fromName?: string
+    settings?: Record<string, unknown>
+  }) => {
+    const response = await api.put('/settings/organization', data)
+    return response.data
+  },
+
+  // User settings
+  getUser: async () => {
+    const response = await api.get('/settings/user')
+    return response.data
+  },
+
+  updateUser: async (data: {
+    firstName?: string
+    lastName?: string
+    twoFactorEnabled?: boolean
+    emailNotifications?: boolean
+    smsNotifications?: boolean
+    browserNotifications?: boolean
+    weeklyReports?: boolean
+    partnerUpdates?: boolean
+    campaignResults?: boolean
+    calendarSyncEnabled?: boolean
+    defaultReminderMinutes?: number
+  }) => {
+    const response = await api.put('/settings/user', data)
+    return response.data
+  },
+
+  // Email testing
+  testEmail: async (testEmail?: string) => {
+    const response = await api.post('/settings/test-email', { testEmail })
+    return response.data
+  },
+
+  // Calendar integration
+  connectGoogleCalendar: async () => {
+    const response = await api.post('/settings/calendar/google/connect')
+    return response.data
+  },
+
+  connectOutlookCalendar: async () => {
+    const response = await api.post('/settings/calendar/outlook/connect')
+    return response.data
+  },
+
+  disconnectCalendar: async (provider: 'google' | 'outlook') => {
+    const response = await api.delete(`/settings/calendar/${provider}/disconnect`)
+    return response.data
+  },
+
+  // Billing
+  getBilling: async () => {
+    const response = await api.get('/settings/billing')
+    return response.data
+  },
+
+  // Data export
+  exportData: async (dataType: 'partners' | 'campaigns' | 'projects' | 'full') => {
+    const response = await api.post(`/settings/export/${dataType}`)
+    return response.data
+  }
+}
+
 export default api

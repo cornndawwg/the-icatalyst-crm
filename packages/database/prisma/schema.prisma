@@ -21,6 +21,26 @@ model Organization {
   plan        String   // starter, professional, enterprise
   status      String   @default("active") // active, suspended, cancelled
   
+  // Company Profile
+  email       String?
+  phone       String?
+  website     String?
+  address     String?
+  city        String?
+  state       String?
+  zipCode     String?
+  logo        String?  // URL to logo file
+  
+  // Email Configuration
+  emailProvider    String?  @default("mailgun") // mailgun, smtp, gmail, outlook
+  smtpHost         String?
+  smtpPort         Int?     @default(587)
+  smtpUsername     String?
+  smtpPassword     String?  // Encrypted
+  smtpEncryption   String?  @default("tls") // tls, ssl, none
+  fromEmail        String?
+  fromName         String?
+  
   // Settings
   settings    Json?    // Organization-specific settings
   
@@ -50,6 +70,24 @@ model User {
   lastName       String
   role           String       // owner, admin, user, readonly
   status         String       @default("active") // active, inactive, invited
+  
+  // Security Settings
+  twoFactorEnabled    Boolean   @default(false)
+  twoFactorSecret     String?
+  
+  // Notification Preferences
+  emailNotifications  Boolean   @default(true)
+  smsNotifications    Boolean   @default(false)
+  browserNotifications Boolean  @default(true)
+  weeklyReports       Boolean   @default(true)
+  partnerUpdates      Boolean   @default(true)
+  campaignResults     Boolean   @default(true)
+  
+  // Calendar Integration
+  googleCalendarToken   String?
+  outlookCalendarToken  String?
+  calendarSyncEnabled   Boolean   @default(false)
+  defaultReminderMinutes Int      @default(15)
   
   lastLoginAt    DateTime?
   
