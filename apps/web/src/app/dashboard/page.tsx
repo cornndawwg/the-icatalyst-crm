@@ -74,11 +74,28 @@ export default function DashboardPage() {
 
         // Fetch dashboard data
         const partners = await partnersApi.getAll()
+        
+        // Calculate stats from real data
+        const totalPartners = partners.length || 0
+        
+        // Count active leads from partners
+        const activeLeads = partners.reduce((count: number, partner: any) => {
+          return count + (partner.leads?.filter((lead: any) => lead.status === 'active')?.length || 0)
+        }, 0)
+        
+        // Count total leads
+        const totalLeads = partners.reduce((count: number, partner: any) => {
+          return count + (partner.leads?.length || 0)
+        }, 0)
+        
+        // Calculate estimated revenue (placeholder calculation)
+        const monthlyRevenue = totalLeads * 5000 // $5k average project value
+        
         setStats({
-          totalPartners: partners.length || 0,
-          activeProjects: 12, // Placeholder
-          monthlyRevenue: 45000, // Placeholder
-          newLeads: 8 // Placeholder
+          totalPartners,
+          activeProjects: activeLeads, // Using active leads as proxy for projects
+          monthlyRevenue,
+          newLeads: totalLeads
         })
       } catch (error) {
         console.error('Error loading dashboard:', error)
