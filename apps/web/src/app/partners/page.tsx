@@ -120,11 +120,11 @@ export default function PartnersPage() {
       // })
       
       // Mock results for now
-      const mockResults = [
+      const mockResults: DiscoveredPartner[] = [
         {
           id: 'disc-1',
           name: 'Elite Design Studio',
-          type: 'interior-designer',
+          type: 'interior-designer' as const,
           address: '123 Main St, ' + discoveryLocation,
           phone: '(555) 123-4567',
           website: 'https://elitedesignstudio.com',
@@ -136,7 +136,7 @@ export default function PartnersPage() {
         {
           id: 'disc-2',
           name: 'Premium Home Builders',
-          type: 'builder',
+          type: 'builder' as const,
           address: '456 Oak Ave, ' + discoveryLocation,
           phone: '(555) 234-5678',
           website: 'https://premiumhomebuilders.com',
@@ -148,7 +148,7 @@ export default function PartnersPage() {
         {
           id: 'disc-3',
           name: 'Modern Architecture Firm',
-          type: 'architect',
+          type: 'architect' as const,
           address: '789 Pine St, ' + discoveryLocation,
           phone: '(555) 345-6789',
           website: 'https://modernarchfirm.com',
