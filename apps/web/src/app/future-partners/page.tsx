@@ -207,6 +207,10 @@ export default function FuturePartnersPage() {
               </div>
             </div>
             <div className="flex gap-2">
+              <Button variant="outline" onClick={() => router.push('/future-partners/templates')}>
+                <Mail className="mr-2 h-4 w-4" />
+                Templates
+              </Button>
               <Button variant="outline" onClick={() => router.push('/future-partners/campaigns/new')}>
                 <MessageSquare className="mr-2 h-4 w-4" />
                 New Campaign
@@ -376,25 +380,106 @@ export default function FuturePartnersPage() {
             )}
           </TabsContent>
 
-          {/* Campaigns Tab - Placeholder for now */}
+          {/* Campaigns Tab */}
           <TabsContent value="campaigns" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Email Campaigns</CardTitle>
-                <CardDescription>
-                  Manage and track your partner outreach campaigns
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
+            {/* Campaign Actions */}
+            <div className="flex justify-between items-center">
+              <h2 className="text-lg font-semibold">Active Campaigns</h2>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => router.push('/future-partners/templates')}>
+                  <Mail className="mr-2 h-4 w-4" />
+                  Browse Templates
+                </Button>
+                <Button onClick={() => router.push('/future-partners/campaigns/new')}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create Campaign
+                </Button>
+              </div>
+            </div>
+
+            {/* Campaign List */}
+            {emailCampaigns.length > 0 ? (
+              <div className="grid gap-4">
+                {emailCampaigns.map((campaign) => (
+                  <Card key={campaign.id} className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <CardTitle className="text-lg">{campaign.name}</CardTitle>
+                          <CardDescription>{campaign.subject}</CardDescription>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge className={
+                            campaign.status === 'sent' ? 'bg-green-100 text-green-700' :
+                            campaign.status === 'scheduled' ? 'bg-blue-100 text-blue-700' :
+                            'bg-gray-100 text-gray-700'
+                          }>
+                            {campaign.status}
+                          </Badge>
+                          {campaign.sentDate && (
+                            <span className="text-sm text-gray-500">
+                              {new Date(campaign.sentDate).toLocaleDateString()}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
+                        <div>
+                          <p className="text-2xl font-bold">{campaign.analytics.sent}</p>
+                          <p className="text-sm text-gray-600">Sent</p>
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold">{campaign.analytics.delivered}</p>
+                          <p className="text-sm text-gray-600">Delivered</p>
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold text-green-600">{campaign.analytics.opened}</p>
+                          <p className="text-sm text-gray-600">Opened ({campaign.analytics.openRate}%)</p>
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold text-purple-600">{campaign.analytics.clicked}</p>
+                          <p className="text-sm text-gray-600">Clicked ({campaign.analytics.clickRate}%)</p>
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold text-emerald-600">{campaign.analytics.replied}</p>
+                          <p className="text-sm text-gray-600">Replied</p>
+                        </div>
+                      </div>
+                      
+                      {/* Target Types */}
+                      <div className="mt-4 flex items-center gap-2">
+                        <span className="text-sm text-gray-500">Targeted:</span>
+                        {campaign.targetTypes.map((type) => (
+                          <Badge key={type} variant="outline" className="text-xs">
+                            {type.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                          </Badge>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="text-center py-12">
                   <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Campaign Management Coming Soon</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No campaigns yet</h3>
                   <p className="text-gray-600 mb-4">
-                    We&apos;re building comprehensive email campaign tools with templates, automation, and analytics.
+                    Create your first email campaign to start nurturing partners
                   </p>
-                </div>
-              </CardContent>
-            </Card>
+                  <div className="flex gap-2 justify-center">
+                    <Button variant="outline" onClick={() => router.push('/future-partners/templates')}>
+                      Browse Templates
+                    </Button>
+                    <Button onClick={() => router.push('/future-partners/campaigns/new')}>
+                      Create Campaign
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           {/* Analytics Tab */}
