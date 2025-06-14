@@ -98,4 +98,52 @@ export const partnersApi = {
   },
 }
 
+// Partner Discovery API functions (ready for Google Places + Hunter.io integration)
+export const discoveryApi = {
+  searchPartners: async (params: {
+    location: string
+    radius: number
+    types: string[]
+  }) => {
+    // TODO: Implement Google Places API search
+    // const response = await api.post('/discovery/search', params)
+    // return response.data
+    throw new Error('Discovery API not yet implemented')
+  },
+
+  enrichPartnerContact: async (businessName: string, website?: string) => {
+    // TODO: Implement Hunter.io contact discovery
+    // const response = await api.post('/discovery/enrich-contact', { businessName, website })
+    // return response.data
+    throw new Error('Contact enrichment API not yet implemented')
+  },
+
+  addDiscoveredPartner: async (discoveredPartner: {
+    name: string
+    type: 'interior-designer' | 'builder' | 'architect'
+    address: string
+    phone?: string
+    website?: string
+    email?: string
+    specialties?: string[]
+    rating?: number
+    reviewCount?: number
+  }) => {
+    // Convert discovered partner to CRM partner format
+    const partnerData = {
+      companyName: discoveredPartner.name,
+      type: discoveredPartner.type,
+      contactName: 'Contact', // TODO: Get from contact discovery
+      email: discoveredPartner.email || '',
+      phone: discoveredPartner.phone,
+      website: discoveredPartner.website,
+      specialties: discoveredPartner.specialties || [],
+      notes: `Added from partner discovery. Rating: ${discoveredPartner.rating}/5 (${discoveredPartner.reviewCount} reviews)\nAddress: ${discoveredPartner.address}`
+    }
+    
+    const response = await api.post('/partners', partnerData)
+    return response.data
+  }
+}
+
 export default api

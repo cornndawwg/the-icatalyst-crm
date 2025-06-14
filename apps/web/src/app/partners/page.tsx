@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { 
   Users, 
   Plus,
@@ -17,16 +18,28 @@ import {
   ArrowLeft,
   TrendingUp,
   DollarSign,
-  Building2
+  Building2,
+  MapPin,
+  Loader2,
+  ExternalLink,
+  UserPlus
 } from 'lucide-react'
-import { partnersApi } from '@/lib/api'
-import type { Partner } from '@/types'
+import { partnersApi, discoveryApi } from '@/lib/api'
+import type { Partner, DiscoveredPartner } from '@/types'
 
 export default function PartnersPage() {
   const [partners, setPartners] = useState<Partner[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [activeTab, setActiveTab] = useState('my-partners')
+  
+  // Discovery search state
+  const [discoveryLocation, setDiscoveryLocation] = useState('')
+  const [discoveryRadius, setDiscoveryRadius] = useState('25')
+  const [discoveryTypes, setDiscoveryTypes] = useState<string[]>(['interior-designer', 'builder', 'architect'])
+  const [discoveryResults, setDiscoveryResults] = useState<DiscoveredPartner[]>([])
+  const [isSearching, setIsSearching] = useState(false)
+  
   const router = useRouter()
 
   useEffect(() => {
@@ -80,6 +93,102 @@ export default function PartnersPage() {
       totalLeads,
       estimatedRevenue,
       conversionRate
+    }
+  }
+
+  const handlePartnerTypeToggle = (type: string) => {
+    setDiscoveryTypes(prev => 
+      prev.includes(type) 
+        ? prev.filter(t => t !== type)
+        : [...prev, type]
+    )
+  }
+
+  const handleDiscoverySearch = async () => {
+    if (!discoveryLocation.trim()) {
+      alert('Please enter a location to search')
+      return
+    }
+
+    setIsSearching(true)
+    try {
+      // TODO: Replace with actual API call
+      // const results = await discoveryApi.searchPartners({
+      //   location: discoveryLocation,
+      //   radius: parseInt(discoveryRadius),
+      //   types: discoveryTypes
+      // })
+      
+      // Mock results for now
+      const mockResults = [
+        {
+          id: 'disc-1',
+          name: 'Elite Design Studio',
+          type: 'interior-designer',
+          address: '123 Main St, ' + discoveryLocation,
+          phone: '(555) 123-4567',
+          website: 'https://elitedesignstudio.com',
+          rating: 4.8,
+          reviewCount: 127,
+          specialties: ['Modern Design', 'Kitchen Renovation', 'Luxury Homes'],
+          distance: '2.3 miles'
+        },
+        {
+          id: 'disc-2',
+          name: 'Premium Home Builders',
+          type: 'builder',
+          address: '456 Oak Ave, ' + discoveryLocation,
+          phone: '(555) 234-5678',
+          website: 'https://premiumhomebuilders.com',
+          rating: 4.9,
+          reviewCount: 89,
+          specialties: ['Custom Homes', 'Smart Home Integration', 'Luxury Construction'],
+          distance: '3.7 miles'
+        },
+        {
+          id: 'disc-3',
+          name: 'Modern Architecture Firm',
+          type: 'architect',
+          address: '789 Pine St, ' + discoveryLocation,
+          phone: '(555) 345-6789',
+          website: 'https://modernarchfirm.com',
+          rating: 4.7,
+          reviewCount: 156,
+          specialties: ['Contemporary Design', 'Sustainable Architecture', 'Residential Projects'],
+          distance: '1.8 miles'
+        }
+      ].filter(result => discoveryTypes.includes(result.type))
+      
+      setDiscoveryResults(mockResults)
+    } catch (error) {
+      console.error('Error searching partners:', error)
+      alert('Error searching for partners. Please try again.')
+    } finally {
+      setIsSearching(false)
+    }
+  }
+
+  const handleAddDiscoveredPartner = async (discoveredPartner: DiscoveredPartner) => {
+    try {
+      await discoveryApi.addDiscoveredPartner({
+        name: discoveredPartner.name,
+        type: discoveredPartner.type,
+        address: discoveredPartner.address,
+        phone: discoveredPartner.phone,
+        website: discoveredPartner.website,
+        specialties: discoveredPartner.specialties,
+        rating: discoveredPartner.rating,
+        reviewCount: discoveredPartner.reviewCount
+      })
+      
+      // Refresh partners list
+      const updatedPartners = await partnersApi.getAll()
+      setPartners(updatedPartners)
+      
+      alert(`${discoveredPartner.name} has been added to your CRM!`)
+    } catch (error) {
+      console.error('Error adding partner:', error)
+      alert('Error adding partner to CRM. Please try again.')
     }
   }
 
@@ -268,7 +377,7 @@ export default function PartnersPage() {
           </TabsContent>
 
           <TabsContent value="discover" className="space-y-6">
-            {/* Partner Discovery Interface */}
+            {/* Partner Discovery Search */}
             <Card>
               <CardHeader>
                 <CardTitle>Discover New Partners</CardTitle>
@@ -276,22 +385,197 @@ export default function PartnersPage() {
                   Find local interior designers, custom home builders, and architects to grow your network
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Partner Discovery Coming Soon</h3>
-                  <p className="text-gray-600 mb-4">
-                    We&apos;re building an intelligent partner discovery system that will help you find and connect with local professionals.
-                  </p>
-                  <div className="space-y-2 text-sm text-gray-500">
-                    <p>🎯 Location-based search for Interior Designers, Builders & Architects</p>
-                    <p>📧 Automated contact discovery with verified email addresses</p>
-                    <p>📊 Business insights and partnership potential scoring</p>
-                    <p>🤝 Streamlined outreach and relationship building tools</p>
+              <CardContent className="space-y-6">
+                {/* Search Form */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {/* Location Input */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Location</label>
+                    <div className="relative">
+                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Input
+                        placeholder="City, State or ZIP"
+                        value={discoveryLocation}
+                        onChange={(e) => setDiscoveryLocation(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Radius Selector */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Search Radius</label>
+                    <Select value={discoveryRadius} onValueChange={setDiscoveryRadius}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="10">10 miles</SelectItem>
+                        <SelectItem value="25">25 miles</SelectItem>
+                        <SelectItem value="50">50 miles</SelectItem>
+                        <SelectItem value="100">100 miles</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Partner Types */}
+                  <div className="space-y-2 md:col-span-2 lg:col-span-1">
+                    <label className="text-sm font-medium">Partner Types</label>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { value: 'interior-designer', label: 'Interior Designers' },
+                        { value: 'builder', label: 'Builders' },
+                        { value: 'architect', label: 'Architects' }
+                      ].map(({ value, label }) => (
+                        <Button
+                          key={value}
+                          variant={discoveryTypes.includes(value) ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => handlePartnerTypeToggle(value)}
+                          className="text-xs"
+                        >
+                          {label}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Search Button */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium invisible">Search</label>
+                    <Button 
+                      onClick={handleDiscoverySearch}
+                      disabled={isSearching || !discoveryLocation.trim()}
+                      className="w-full"
+                    >
+                      {isSearching ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Searching...
+                        </>
+                      ) : (
+                        <>
+                          <Search className="mr-2 h-4 w-4" />
+                          Search Partners
+                        </>
+                      )}
+                    </Button>
                   </div>
                 </div>
               </CardContent>
             </Card>
+
+            {/* Search Results */}
+            {discoveryResults.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Search Results</CardTitle>
+                  <CardDescription>
+                    Found {discoveryResults.length} potential partners in {discoveryLocation}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {discoveryResults.map((result) => (
+                      <Card key={result.id} className="hover:shadow-lg transition-shadow">
+                        <CardHeader className="pb-3">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <CardTitle className="text-lg">{result.name}</CardTitle>
+                              <CardDescription className="flex items-center gap-1 mt-1">
+                                <MapPin className="h-3 w-3" />
+                                {result.distance}
+                              </CardDescription>
+                            </div>
+                            <Badge className={getPartnerTypeColor(result.type)}>
+                              {formatPartnerType(result.type)}
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          {/* Contact Info */}
+                          <div className="space-y-2 text-sm">
+                            <div className="flex items-center gap-2 text-gray-600">
+                              <MapPin className="h-4 w-4" />
+                              <span className="truncate">{result.address}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-gray-600">
+                              <Phone className="h-4 w-4" />
+                              <span>{result.phone}</span>
+                            </div>
+                            {result.website && (
+                              <div className="flex items-center gap-2 text-gray-600">
+                                <ExternalLink className="h-4 w-4" />
+                                <a 
+                                  href={result.website} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:underline truncate"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  Visit Website
+                                </a>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Rating */}
+                          <div className="flex items-center gap-2">
+                            <div className="flex items-center">
+                              <span className="text-yellow-500">★</span>
+                              <span className="text-sm font-medium ml-1">{result.rating}</span>
+                            </div>
+                            <span className="text-sm text-gray-500">({result.reviewCount} reviews)</span>
+                          </div>
+
+                          {/* Specialties */}
+                          {result.specialties && result.specialties.length > 0 && (
+                            <div className="flex flex-wrap gap-1">
+                              {result.specialties.slice(0, 3).map((specialty: string, index: number) => (
+                                <Badge key={index} variant="secondary" className="text-xs">
+                                  {specialty}
+                                </Badge>
+                              ))}
+                              {result.specialties.length > 3 && (
+                                <Badge variant="secondary" className="text-xs">
+                                  +{result.specialties.length - 3}
+                                </Badge>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Action Button */}
+                          <Button 
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleAddDiscoveredPartner(result)
+                            }}
+                            className="w-full"
+                            size="sm"
+                          >
+                            <UserPlus className="mr-2 h-4 w-4" />
+                            Add to CRM
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Empty State for No Results */}
+            {!isSearching && discoveryResults.length === 0 && discoveryLocation && (
+              <Card>
+                <CardContent className="text-center py-12">
+                  <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No partners found</h3>
+                  <p className="text-gray-600 mb-4">
+                    Try adjusting your search location, radius, or partner types.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
         </Tabs>
       </main>

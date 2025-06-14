@@ -46,3 +46,17 @@ export interface Organization {
   name: string
   plan: string
 }
+
+export interface DiscoveredPartner {
+  id: string
+  name: string
+  type: 'interior-designer' | 'builder' | 'architect'
+  address: string
+  phone?: string
+  website?: string
+  email?: string
+  rating: number
+  reviewCount: number
+  specialties: string[]
+  distance: string
+}
