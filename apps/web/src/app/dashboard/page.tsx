@@ -19,7 +19,7 @@ import {
   X
 } from 'lucide-react'
 import { partnersApi } from '@/lib/api'
-import type { Partner, User, Organization } from '@/types'
+import type { User, Organization } from '@/types'
 
 interface DashboardStats {
   totalPartners: number
