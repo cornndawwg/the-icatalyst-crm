@@ -79,12 +79,12 @@ export default function DashboardPage() {
         const totalPartners = partners.length || 0
         
         // Count active leads from partners
-        const activeLeads = partners.reduce((count: number, partner: any) => {
-          return count + (partner.leads?.filter((lead: any) => lead.status === 'active')?.length || 0)
+        const activeLeads = partners.reduce((count: number, partner: { leads?: { status: string }[] }) => {
+          return count + (partner.leads?.filter((lead) => lead.status === 'active')?.length || 0)
         }, 0)
         
         // Count total leads
-        const totalLeads = partners.reduce((count: number, partner: any) => {
+        const totalLeads = partners.reduce((count: number, partner: { leads?: unknown[] }) => {
           return count + (partner.leads?.length || 0)
         }, 0)
         

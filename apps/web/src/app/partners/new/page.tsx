@@ -51,9 +51,12 @@ export default function NewPartnerPage() {
       
       await partnersApi.create(partnerData)
       router.push('/partners')
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating partner:', error)
-      alert(error.response?.data?.error || 'Failed to create partner')
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as { response?: { data?: { error?: string } } }).response?.data?.error 
+        : 'Failed to create partner'
+      alert(errorMessage)
     } finally {
       setIsSubmitting(false)
     }
@@ -96,7 +99,7 @@ export default function NewPartnerPage() {
               {/* Partner Type */}
               <div className="space-y-2">
                 <Label htmlFor="type">Partner Type *</Label>
-                <Select onValueChange={(value) => setValue('type', value as any)}>
+                <Select onValueChange={(value) => setValue('type', value as 'interior-designer' | 'builder' | 'architect')}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select partner type" />
                   </SelectTrigger>

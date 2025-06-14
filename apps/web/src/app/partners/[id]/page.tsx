@@ -13,13 +13,30 @@ import {
   Phone, 
   Mail, 
   Globe,
-  Calendar,
-  MessageSquare,
   TrendingUp,
   TrendingDown,
   Minus
 } from 'lucide-react'
 import { partnersApi } from '@/lib/api'
+
+interface Interaction {
+  id: string
+  type: string
+  subject: string
+  description?: string
+  outcome: 'positive' | 'negative' | 'neutral'
+  date: string
+}
+
+interface Lead {
+  id: string
+  status: string
+  createdAt: string
+  customer?: {
+    name: string
+    email: string
+  }
+}
 
 interface Partner {
   id: string
@@ -32,8 +49,8 @@ interface Partner {
   specialties?: string[]
   notes?: string
   relationshipScore: number
-  interactions?: any[]
-  leads?: any[]
+  interactions?: Interaction[]
+  leads?: Lead[]
   createdAt: string
   updatedAt: string
 }
@@ -268,7 +285,7 @@ export default function PartnerDetailPage() {
                   <CardContent>
                     {partner.interactions && partner.interactions.length > 0 ? (
                       <div className="space-y-4">
-                        {partner.interactions.map((interaction: any) => (
+                        {partner.interactions.map((interaction) => (
                           <div key={interaction.id} className="border-b pb-4 last:border-0">
                             <div className="flex items-start justify-between">
                               <div>
@@ -316,7 +333,7 @@ export default function PartnerDetailPage() {
                   <CardContent>
                     {partner.leads && partner.leads.length > 0 ? (
                       <div className="space-y-4">
-                        {partner.leads.map((lead: any) => (
+                        {partner.leads.map((lead) => (
                           <div key={lead.id} className="border-b pb-4 last:border-0">
                             <div className="flex items-start justify-between">
                               <div>
