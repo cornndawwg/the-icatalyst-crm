@@ -14,7 +14,6 @@ import {
   Filter,
   Phone,
   Mail,
-  Globe,
   ArrowLeft,
   TrendingUp,
   DollarSign,
@@ -282,7 +281,7 @@ export default function PartnersPage() {
                   <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">Partner Discovery Coming Soon</h3>
                   <p className="text-gray-600 mb-4">
-                    We're building an intelligent partner discovery system that will help you find and connect with local professionals.
+                    We&apos;re building an intelligent partner discovery system that will help you find and connect with local professionals.
                   </p>
                   <div className="space-y-2 text-sm text-gray-500">
                     <p>🎯 Location-based search for Interior Designers, Builders & Architects</p>
