@@ -309,10 +309,12 @@ export default function PartnerDetailPage() {
                                   {lead.customer?.email}
                                 </p>
                                 <Badge
-                                  className="mt-2"
+                                  className={`mt-2 ${
+                                    lead.status === 'won' ? 'bg-green-100 text-green-700 border-green-200' : ''
+                                  }`}
                                   variant={
                                     lead.status === 'active' ? 'default' :
-                                    lead.status === 'won' ? 'success' :
+                                    lead.status === 'won' ? 'outline' :
                                     'secondary'
                                   }
                                 >
