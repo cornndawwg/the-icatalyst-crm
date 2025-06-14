@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { authApi } from '@/lib/api'
-import { Building2, Users, CheckCircle } from 'lucide-react'
+import { Building2, CheckCircle } from 'lucide-react'
 
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -53,8 +53,9 @@ export default function RegisterPage() {
       
       // Redirect to dashboard
       router.push('/dashboard')
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Registration failed')
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string } } }
+      setError(error.response?.data?.error || 'Registration failed')
     } finally {
       setIsLoading(false)
     }

@@ -67,7 +67,16 @@ export const partnersApi = {
     return response.data
   },
 
-  update: async (id: string, data: any) => {
+  update: async (id: string, data: Partial<{
+    type: 'interior-designer' | 'builder' | 'architect'
+    companyName: string
+    contactName: string
+    email: string
+    phone?: string
+    website?: string
+    specialties?: string[]
+    notes?: string
+  }>) => {
     const response = await api.put(`/partners/${id}`, data)
     return response.data
   },

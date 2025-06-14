@@ -47,8 +47,9 @@ export default function LoginPage() {
       
       // Redirect to dashboard
       router.push('/dashboard')
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Login failed')
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string } } }
+      setError(error.response?.data?.error || 'Login failed')
     } finally {
       setIsLoading(false)
     }
@@ -115,7 +116,7 @@ export default function LoginPage() {
 
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <Link href="/register" className="text-blue-600 hover:underline font-medium">
                   Start your free trial
                 </Link>
