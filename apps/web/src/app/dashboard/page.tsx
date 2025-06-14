@@ -34,7 +34,7 @@ interface DashboardStats {
 interface NavigationItem {
   name: string
   href: string
-  icon: any
+  icon: React.ComponentType<{ className?: string }>
   current: boolean
   children?: NavigationItem[]
 }
