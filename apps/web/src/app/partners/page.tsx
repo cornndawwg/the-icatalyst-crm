@@ -185,7 +185,7 @@ export default function PartnersPage() {
       const updatedPartners = await partnersApi.getAll()
       setPartners(updatedPartners)
       
-      alert(`${discoveredPartner.name} has been added to your CRM!`)
+      alert(`${discoveredPartner.name} has been added to your Future Partners! Visit the Future Partners section to manage email campaigns and nurture this relationship.`)
     } catch (error) {
       console.error('Error adding partner:', error)
       alert('Error adding partner to CRM. Please try again.')
@@ -554,7 +554,7 @@ export default function PartnersPage() {
                             size="sm"
                           >
                             <UserPlus className="mr-2 h-4 w-4" />
-                            Add to CRM
+                            Add to Future Partners
                           </Button>
                         </CardContent>
                       </Card>

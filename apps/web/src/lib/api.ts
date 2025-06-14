@@ -98,6 +98,86 @@ export const partnersApi = {
   },
 }
 
+// Future Partners API functions
+export const futurePartnersApi = {
+  getAll: async () => {
+    const response = await api.get('/future-partners')
+    return response.data
+  },
+
+  getById: async (id: string) => {
+    const response = await api.get(`/future-partners/${id}`)
+    return response.data
+  },
+
+  create: async (data: {
+    name: string
+    type: 'interior-designer' | 'builder' | 'architect'
+    address: string
+    phone?: string
+    website?: string
+    email?: string
+    rating?: number
+    reviewCount?: number
+    specialties?: string[]
+    source: 'discovery' | 'referral' | 'manual'
+    notes?: string
+  }) => {
+    const response = await api.post('/future-partners', data)
+    return response.data
+  },
+
+  updateStatus: async (id: string, status: 'new' | 'contacted' | 'interested' | 'not-interested' | 'converted') => {
+    const response = await api.patch(`/future-partners/${id}/status`, { status })
+    return response.data
+  },
+
+  convertToPartner: async (id: string) => {
+    const response = await api.post(`/future-partners/${id}/convert`)
+    return response.data
+  },
+
+  delete: async (id: string) => {
+    const response = await api.delete(`/future-partners/${id}`)
+    return response.data
+  }
+}
+
+// Email Campaigns API functions
+export const emailCampaignsApi = {
+  getAll: async () => {
+    const response = await api.get('/email-campaigns')
+    return response.data
+  },
+
+  getById: async (id: string) => {
+    const response = await api.get(`/email-campaigns/${id}`)
+    return response.data
+  },
+
+  create: async (data: {
+    name: string
+    subject: string
+    content: string
+    targetTypes: ('interior-designer' | 'builder' | 'architect')[]
+    recipients?: string[]
+    scheduledDate?: string
+  }) => {
+    const response = await api.post('/email-campaigns', data)
+    return response.data
+  },
+
+  send: async (id: string) => {
+    const response = await api.post(`/email-campaigns/${id}/send`)
+    return response.data
+  },
+
+  getAnalytics: async (id: string) => {
+    const response = await api.get(`/email-campaigns/${id}/analytics`)
+    return response.data
+  }
+}
+
 // Partner Discovery API functions (ready for Google Places + Hunter.io integration)
 export const discoveryApi = {
 
@@ -112,19 +192,22 @@ export const discoveryApi = {
     rating?: number
     reviewCount?: number
   }) => {
-    // Convert discovered partner to CRM partner format
-    const partnerData = {
-      companyName: discoveredPartner.name,
+    // Convert discovered partner to Future Partner format
+    const futurePartnerData = {
+      name: discoveredPartner.name,
       type: discoveredPartner.type,
-      contactName: 'Contact', // TODO: Get from contact discovery
-      email: discoveredPartner.email || '',
+      address: discoveredPartner.address,
       phone: discoveredPartner.phone,
       website: discoveredPartner.website,
+      email: discoveredPartner.email,
+      rating: discoveredPartner.rating,
+      reviewCount: discoveredPartner.reviewCount,
       specialties: discoveredPartner.specialties || [],
-      notes: `Added from partner discovery. Rating: ${discoveredPartner.rating}/5 (${discoveredPartner.reviewCount} reviews)\nAddress: ${discoveredPartner.address}`
+      source: 'discovery' as const,
+      notes: discoveredPartner.rating ? `Rating: ${discoveredPartner.rating}/5 (${discoveredPartner.reviewCount} reviews)` : undefined
     }
     
-    const response = await api.post('/partners', partnerData)
+    const response = await api.post('/future-partners', futurePartnerData)
     return response.data
   }
 }

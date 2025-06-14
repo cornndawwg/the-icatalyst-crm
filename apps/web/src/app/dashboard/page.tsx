@@ -16,7 +16,8 @@ import {
   Settings,
   LogOut,
   Menu,
-  X
+  X,
+  Search
 } from 'lucide-react'
 import { partnersApi } from '@/lib/api'
 import type { User, Organization } from '@/types'
@@ -106,6 +107,7 @@ export default function DashboardPage() {
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: Home, current: true },
     { name: 'Partners', href: '/partners', icon: Users, current: false },
+    { name: 'Future Partners', href: '/future-partners', icon: Search, current: false },
     { name: 'Projects', href: '/projects', icon: FileText, current: false },
     { name: 'Leads', href: '/leads', icon: UserPlus, current: false },
     { name: 'Calendar', href: '/calendar', icon: Calendar, current: false },
