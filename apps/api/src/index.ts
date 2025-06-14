@@ -25,7 +25,7 @@ app.set('trust proxy', 1)
 app.use(helmet())
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? [process.env.APP_URL!] 
+    ? ['https://web-icatalyst.up.railway.app', process.env.APP_URL!].filter(Boolean)
     : ['http://localhost:3000', 'http://localhost:3001'],
   credentials: true
 }))
