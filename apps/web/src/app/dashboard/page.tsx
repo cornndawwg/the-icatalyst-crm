@@ -18,7 +18,7 @@ import {
   Menu,
   X
 } from 'lucide-react'
-import { authApi, partnersApi } from '@/lib/api'
+import { partnersApi } from '@/lib/api'
 
 interface DashboardStats {
   totalPartners: number
