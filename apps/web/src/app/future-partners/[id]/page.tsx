@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select'
 import { 
   ArrowLeft,
   Phone,
@@ -30,8 +30,7 @@ import {
   Clock,
   AlertCircle
 } from 'lucide-react'
-import type { FuturePartner, EmailCampaignInteraction } from '@/types'
-import { futurePartnersApi, emailCampaignsApi } from '@/lib/api'
+import type { FuturePartner } from '@/types'
 
 export default function FuturePartnerDetailPage() {
   const [partner, setPartner] = useState<FuturePartner | null>(null)

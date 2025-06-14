@@ -10,15 +10,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { 
   Users, 
-  Plus,
   Search,
-  Filter,
   Phone,
   Mail,
   ArrowLeft,
   TrendingUp,
-  DollarSign,
-  Building2,
   MapPin,
   Calendar,
   UserPlus,
