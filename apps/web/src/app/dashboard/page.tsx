@@ -17,7 +17,9 @@ import {
   LogOut,
   Menu,
   X,
-  Search
+  Search,
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react'
 import { partnersApi } from '@/lib/api'
 import type { User, Organization } from '@/types'
@@ -27,6 +29,14 @@ interface DashboardStats {
   activeProjects: number
   monthlyRevenue: number
   newLeads: number
+}
+
+interface NavigationItem {
+  name: string
+  href: string
+  icon: any
+  current: boolean
+  children?: NavigationItem[]
 }
 
 export default function DashboardPage() {
@@ -40,6 +50,7 @@ export default function DashboardPage() {
   })
   const [isLoading, setIsLoading] = useState(true)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [expandedSections, setExpandedSections] = useState<string[]>(['partners'])
   const router = useRouter()
 
   useEffect(() => {
@@ -104,15 +115,31 @@ export default function DashboardPage() {
     router.push('/login')
   }
 
-  const navigation = [
+  const navigation: NavigationItem[] = [
     { name: 'Dashboard', href: '/dashboard', icon: Home, current: true },
-    { name: 'Partners', href: '/partners', icon: Users, current: false },
-    { name: 'Future Partners', href: '/future-partners', icon: Search, current: false },
+    { 
+      name: 'Partners', 
+      href: '/partners', 
+      icon: Users, 
+      current: false,
+      children: [
+        { name: 'My Partners', href: '/partners', icon: Users, current: false },
+        { name: 'Future Partners', href: '/future-partners', icon: Search, current: false },
+      ]
+    },
     { name: 'Projects', href: '/projects', icon: FileText, current: false },
     { name: 'Leads', href: '/leads', icon: UserPlus, current: false },
     { name: 'Calendar', href: '/calendar', icon: Calendar, current: false },
     { name: 'Settings', href: '/settings', icon: Settings, current: false },
   ]
+
+  const toggleSection = (sectionName: string) => {
+    setExpandedSections(prev => 
+      prev.includes(sectionName) 
+        ? prev.filter(name => name !== sectionName)
+        : [...prev, sectionName]
+    )
+  }
 
   if (isLoading) {
     return (
@@ -154,14 +181,50 @@ export default function DashboardPage() {
             <ul className="space-y-1">
               {navigation.map((item) => (
                 <li key={item.name}>
-                  <Button
-                    variant={item.current ? "secondary" : "ghost"}
-                    className="w-full justify-start"
-                    onClick={() => router.push(item.href)}
-                  >
-                    <item.icon className="mr-3 h-5 w-5" />
-                    {item.name}
-                  </Button>
+                  {item.children ? (
+                    <>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-between"
+                        onClick={() => toggleSection(item.name.toLowerCase())}
+                      >
+                        <div className="flex items-center">
+                          <item.icon className="mr-3 h-5 w-5" />
+                          {item.name}
+                        </div>
+                        {expandedSections.includes(item.name.toLowerCase()) ? (
+                          <ChevronDown className="h-4 w-4" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4" />
+                        )}
+                      </Button>
+                      {expandedSections.includes(item.name.toLowerCase()) && (
+                        <ul className="ml-6 mt-1 space-y-1">
+                          {item.children.map((child) => (
+                            <li key={child.name}>
+                              <Button
+                                variant={child.current ? "secondary" : "ghost"}
+                                className="w-full justify-start text-sm"
+                                onClick={() => router.push(child.href)}
+                              >
+                                <child.icon className="mr-3 h-4 w-4" />
+                                {child.name}
+                              </Button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </>
+                  ) : (
+                    <Button
+                      variant={item.current ? "secondary" : "ghost"}
+                      className="w-full justify-start"
+                      onClick={() => router.push(item.href)}
+                    >
+                      <item.icon className="mr-3 h-5 w-5" />
+                      {item.name}
+                    </Button>
+                  )}
                 </li>
               ))}
             </ul>
