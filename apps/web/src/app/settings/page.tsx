@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -24,13 +24,7 @@ import {
   Settings,
   Upload,
   Check,
-  X,
-  Plus,
-  Trash2,
-  Key,
   Globe,
-  Smartphone,
-  Lock,
   Eye,
   EyeOff,
   TestTube
@@ -45,12 +39,6 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
-  // Organization settings
-  const [organizationSettings, setOrganizationSettings] = useState<any>({})
-  
-  // User settings
-  const [userSettings, setUserSettings] = useState<any>({})
-
   // Load settings from backend
   useEffect(() => {
     const loadSettings = async () => {
@@ -60,9 +48,6 @@ export default function SettingsPage() {
           settingsApi.getOrganization(),
           settingsApi.getUser()
         ])
-        
-        setOrganizationSettings(orgData)
-        setUserSettings(userData)
         
         // Update form states with loaded data
         setCompanyInfo({
@@ -155,17 +140,12 @@ export default function SettingsPage() {
     reminderMinutes: 15
   })
 
-  const [billingInfo, setBillingInfo] = useState({
+  const [billingInfo] = useState({
     plan: 'professional',
     billingCycle: 'monthly',
     nextBilling: '2024-02-15',
     paymentMethod: 'card-4567'
   })
-
-  const [teamMembers, setTeamMembers] = useState([
-    { id: '1', name: 'John Doe', email: 'john@company.com', role: 'owner', status: 'active' },
-    { id: '2', name: 'Jane Smith', email: 'jane@company.com', role: 'admin', status: 'active' }
-  ])
 
   const [securitySettings, setSecuritySettings] = useState({
     twoFactorEnabled: false,
@@ -436,10 +416,12 @@ export default function SettingsPage() {
                     <div className="mt-2 flex items-center gap-4">
                       <div className="h-20 w-20 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
                         {companyInfo.logo ? (
-                          <img 
+                          <Image 
                             src={URL.createObjectURL(companyInfo.logo)} 
                             alt="Logo" 
                             className="h-full w-full object-cover rounded-lg"
+                            width={80}
+                            height={80}
                           />
                         ) : (
                           <Building2 className="h-8 w-8 text-gray-400" />
