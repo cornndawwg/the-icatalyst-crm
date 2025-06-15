@@ -113,7 +113,7 @@ export default function SettingsPage() {
           campaignResults: userData.campaignResults || true
         })
         
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to load settings:', error)
         
         // Handle authentication errors
