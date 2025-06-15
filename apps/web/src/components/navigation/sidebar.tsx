@@ -59,8 +59,8 @@ const navItems: NavItem[] = [
     id: 'campaigns',
     label: 'Email Campaigns',
     icon: Mail,
-    href: '/future-partners',
-    description: 'Marketing campaigns'
+    href: '/campaigns',
+    description: 'Campaign management'
   },
   {
     id: 'settings',

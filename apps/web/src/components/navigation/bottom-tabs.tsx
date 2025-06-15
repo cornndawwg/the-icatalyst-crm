@@ -71,14 +71,14 @@ const moreItems: MoreItem[] = [
     label: 'Future Partners',
     icon: Users,
     href: '/future-partners',
-    description: 'Partner pipeline and outreach'
+    description: 'Partner pipeline and nurturing'
   },
   {
     id: 'campaigns',
     label: 'Email Campaigns',
     icon: Mail,
-    href: '/future-partners',
-    description: 'Marketing campaigns and templates'
+    href: '/campaigns',
+    description: 'Campaign management for all contacts'
   },
   {
     id: 'settings',
@@ -111,7 +111,7 @@ export default function BottomTabs() {
     if (pathname === '/' || pathname === '/dashboard') return 'dashboard'
     if (pathname.startsWith('/partners')) return 'partners'
     if (pathname.startsWith('/projects')) return 'projects'
-    if (pathname.startsWith('/future-partners') || pathname.startsWith('/settings')) return 'more'
+    if (pathname.startsWith('/future-partners') || pathname.startsWith('/campaigns') || pathname.startsWith('/settings')) return 'more'
     return null
   }
 
