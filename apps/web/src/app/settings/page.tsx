@@ -37,13 +37,29 @@ export default function SettingsPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [testingEmail, setTestingEmail] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [mounted, setMounted] = useState(false)
   const [saving, setSaving] = useState(false)
+
+  // Handle client-side mounting
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Load settings from backend
   useEffect(() => {
+    if (!mounted) return
+
     const loadSettings = async () => {
       try {
         setLoading(true)
+        
+        // Check if user is authenticated
+        const token = localStorage.getItem('auth-token')
+        if (!token) {
+          router.push('/login')
+          return
+        }
+        
         const [orgData, userData] = await Promise.all([
           settingsApi.getOrganization(),
           settingsApi.getUser()
@@ -99,14 +115,23 @@ export default function SettingsPage() {
         
       } catch (error) {
         console.error('Failed to load settings:', error)
-        alert('Failed to load settings. Please refresh the page.')
+        
+        // Handle authentication errors
+        if (error?.response?.status === 401) {
+          localStorage.removeItem('auth-token')
+          router.push('/login')
+          return
+        }
+        
+        // For other errors, show user-friendly message
+        alert('Failed to load settings. Please try refreshing the page.')
       } finally {
         setLoading(false)
       }
     }
     
     loadSettings()
-  }, [])
+  }, [mounted, router])
   
   // Derived company info for form
   const [companyInfo, setCompanyInfo] = useState({
@@ -280,7 +305,7 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {loading ? (
+      {!mounted || loading ? (
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <Settings className="h-12 w-12 text-gray-400 mx-auto mb-4 animate-spin" />

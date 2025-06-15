@@ -8,7 +8,15 @@ router.use(authenticateToken as any)
 // Get organization settings
 router.get('/organization', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
+    console.log('Getting organization settings for user:', req.user?.userId, 'org:', req.user?.organizationId)
+    
     const { prisma } = req.app.locals
+    if (!prisma) {
+      console.error('Prisma client not available')
+      res.status(500).json({ error: 'Database connection not available' })
+      return
+    }
+
     const organization = await prisma.organization.findUnique({
       where: { id: req.user!.organizationId },
       select: {
@@ -35,6 +43,8 @@ router.get('/organization', async (req: AuthenticatedRequest, res: Response): Pr
       }
     })
 
+    console.log('Found organization:', organization?.id)
+
     if (!organization) {
       res.status(404).json({ error: 'Organization not found' })
       return
@@ -44,7 +54,7 @@ router.get('/organization', async (req: AuthenticatedRequest, res: Response): Pr
     res.json(organization)
   } catch (error) {
     console.error('Error fetching organization settings:', error)
-    res.status(500).json({ error: 'Failed to fetch organization settings' })
+    res.status(500).json({ error: 'Failed to fetch organization settings', details: error.message })
   }
 })
 
@@ -134,7 +144,15 @@ router.put('/organization', async (req: AuthenticatedRequest, res: Response): Pr
 // Get user settings
 router.get('/user', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
+    console.log('Getting user settings for user:', req.user?.userId)
+    
     const { prisma } = req.app.locals
+    if (!prisma) {
+      console.error('Prisma client not available')
+      res.status(500).json({ error: 'Database connection not available' })
+      return
+    }
+
     const user = await prisma.user.findUnique({
       where: { id: req.user!.userId },
       select: {
@@ -157,6 +175,8 @@ router.get('/user', async (req: AuthenticatedRequest, res: Response): Promise<vo
       }
     })
 
+    console.log('Found user:', user?.id)
+
     if (!user) {
       res.status(404).json({ error: 'User not found' })
       return
@@ -174,7 +194,7 @@ router.get('/user', async (req: AuthenticatedRequest, res: Response): Promise<vo
     res.json(userSettings)
   } catch (error) {
     console.error('Error fetching user settings:', error)
-    res.status(500).json({ error: 'Failed to fetch user settings' })
+    res.status(500).json({ error: 'Failed to fetch user settings', details: error.message })
   }
 })
 
