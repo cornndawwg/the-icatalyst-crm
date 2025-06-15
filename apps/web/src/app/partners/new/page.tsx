@@ -112,7 +112,7 @@ export default function NewPartnerPage() {
               {/* Partner Type */}
               <div className="space-y-2">
                 <Label htmlFor="type">Partner Type *</Label>
-                <Select onValueChange={(value) => setValue('type', value as any)}>
+                <Select onValueChange={(value) => setValue('type', value as 'interior-designer' | 'builder' | 'architect')}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select partner type" />
                   </SelectTrigger>

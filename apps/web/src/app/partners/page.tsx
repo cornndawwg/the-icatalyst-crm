@@ -16,7 +16,6 @@ import {
   Filter,
   Phone,
   Mail,
-  ArrowLeft,
   TrendingUp,
   DollarSign,
   Building2,

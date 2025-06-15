@@ -14,7 +14,6 @@ import {
   Search,
   Phone,
   Mail,
-  ArrowLeft,
   TrendingUp,
   MapPin,
   Calendar,

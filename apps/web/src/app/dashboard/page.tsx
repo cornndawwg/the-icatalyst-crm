@@ -10,12 +10,10 @@ import {
   FolderOpen, 
   Users, 
   TrendingUp,
-  DollarSign,
   Calendar,
   Mail,
   UserPlus,
-  FileText,
-  Plus
+  FileText
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { partnersApi } from '@/lib/api'
