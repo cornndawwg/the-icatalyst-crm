@@ -456,23 +456,26 @@ export default function SettingsPage() {
                         )}
                       </div>
                       <div>
-                        <Button variant="outline" size="sm" asChild>
-                          <label htmlFor="company-logo">
-                            <Upload className="mr-2 h-4 w-4" />
-                            Upload Logo
-                            <input
-                              id="company-logo"
-                              type="file"
-                              accept="image/*"
-                              className="sr-only"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0]
-                                if (file) {
-                                  setCompanyInfo(prev => ({ ...prev, logo: file }))
-                                }
-                              }}
-                            />
-                          </label>
+                        <input
+                          id="company-logo"
+                          type="file"
+                          accept="image/*"
+                          className="sr-only"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) {
+                              setCompanyInfo(prev => ({ ...prev, logo: file }))
+                            }
+                          }}
+                        />
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          type="button"
+                          onClick={() => document.getElementById('company-logo')?.click()}
+                        >
+                          <Upload className="mr-2 h-4 w-4" />
+                          Upload Logo
                         </Button>
                         <p className="text-xs text-gray-500 mt-1">
                           PNG, JPG up to 2MB
@@ -734,7 +737,7 @@ export default function SettingsPage() {
                           setCalendarIntegration(prev => ({ ...prev, reminderMinutes: parseInt(value) }))
                         }
                       >
-                        <SelectTrigger className="mt-2">
+                        <SelectTrigger id="reminder-minutes" className="mt-2">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
