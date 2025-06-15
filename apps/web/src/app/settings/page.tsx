@@ -113,14 +113,17 @@ export default function SettingsPage() {
           campaignResults: userData.campaignResults || true
         })
         
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Failed to load settings:', error)
         
         // Handle authentication errors
-        if (error?.response?.status === 401) {
-          localStorage.removeItem('auth-token')
-          router.push('/login')
-          return
+        if (error && typeof error === 'object' && 'response' in error) {
+          const axiosError = error as { response: { status: number } }
+          if (axiosError.response.status === 401) {
+            localStorage.removeItem('auth-token')
+            router.push('/login')
+            return
+          }
         }
         
         // For other errors, show user-friendly message
