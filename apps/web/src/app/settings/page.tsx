@@ -45,11 +45,13 @@ export default function SettingsPage() {
       try {
         setLoading(true)
         
-        // Check if user is authenticated
-        const token = localStorage.getItem('auth-token')
-        if (!token) {
-          router.push('/login')
-          return
+        // Check if user is authenticated (only on client side)
+        if (typeof window !== 'undefined') {
+          const token = localStorage.getItem('auth-token')
+          if (!token) {
+            router.push('/login')
+            return
+          }
         }
         
         const [orgData, userData] = await Promise.all([

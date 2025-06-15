@@ -2,13 +2,18 @@ import { Router, Request, Response } from 'express'
 import { authenticateToken, AuthenticatedRequest } from '../middleware/auth'
 import bcrypt from 'bcrypt'
 
+// Import Prisma from the database package
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
+
 const router = Router()
 router.use(authenticateToken as any)
 
 // Get organization settings
 router.get('/organization', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const { prisma } = req.app.locals
+    // Use imported prisma client
     console.log('Getting organization settings for user:', req.user?.userId, 'org:', req.user?.organizationId)
     
     const organization = await prisma.organization.findUnique({
@@ -52,7 +57,7 @@ router.get('/organization', async (req: AuthenticatedRequest, res: Response): Pr
 // Update organization settings
 router.put('/organization', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const { prisma } = req.app.locals
+    // Use imported prisma client
     console.log('Updating organization settings:', req.body)
     
     const {
@@ -132,7 +137,7 @@ router.put('/organization', async (req: AuthenticatedRequest, res: Response): Pr
 // Get user settings
 router.get('/user', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const { prisma } = req.app.locals
+    // Use imported prisma client
     console.log('Getting user settings for user:', req.user?.userId)
     
     const user = await prisma.user.findUnique({
@@ -185,7 +190,7 @@ router.get('/user', async (req: AuthenticatedRequest, res: Response): Promise<vo
 // Update user settings
 router.put('/user', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const { prisma } = req.app.locals
+    // Use imported prisma client
     console.log('Updating user settings:', req.body)
     
     const {
@@ -262,7 +267,7 @@ router.put('/user', async (req: AuthenticatedRequest, res: Response): Promise<vo
 // Test email configuration
 router.post('/test-email', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const { prisma } = req.app.locals
+    // Use imported prisma client
     const { testEmail } = req.body
 
     // Get organization email settings
@@ -341,7 +346,7 @@ router.post('/calendar/outlook/connect', async (req: AuthenticatedRequest, res: 
 // Disconnect calendar
 router.delete('/calendar/:provider/disconnect', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const { prisma } = req.app.locals
+    // Use imported prisma client
     const { provider } = req.params
 
     const updateData: any = {}
@@ -366,7 +371,7 @@ router.delete('/calendar/:provider/disconnect', async (req: AuthenticatedRequest
 // Get billing information
 router.get('/billing', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const { prisma } = req.app.locals
+    // Use imported prisma client
     const organization = await prisma.organization.findUnique({
       where: { id: req.user!.organizationId },
       select: {
@@ -410,7 +415,7 @@ router.get('/billing', async (req: AuthenticatedRequest, res: Response): Promise
 // Export data
 router.post('/export/:dataType', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const { prisma } = req.app.locals
+    // Use imported prisma client
     const { dataType } = req.params
 
     let data: any = {}
