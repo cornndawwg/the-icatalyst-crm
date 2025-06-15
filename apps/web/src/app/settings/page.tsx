@@ -333,7 +333,7 @@ export default function SettingsPage() {
                 </div>
               </div>
             </div>
-          </header>
+          </div>
 
       {/* Main content */}
       <main className="p-4 sm:p-6 lg:p-8">
