@@ -76,8 +76,8 @@ export default function NewProjectPage() {
     description: '',
     projectType: '',
     customerId: '',
-    propertyId: '',
-    primaryPartnerId: '',
+    propertyId: 'none',
+    primaryPartnerId: 'none',
     
     // Dates
     startDate: '',
@@ -88,7 +88,7 @@ export default function NewProjectPage() {
     estimatedValue: '',
     
     // Template
-    templateId: '',
+    templateId: 'none',
     useTemplate: false
   })
 
@@ -174,13 +174,13 @@ export default function NewProjectPage() {
         description: formData.description || undefined,
         projectType: formData.projectType as 'new-install' | 'upgrade' | 'service' | 'design-only',
         customerId: formData.customerId,
-        propertyId: formData.propertyId || undefined,
-        primaryPartnerId: formData.primaryPartnerId || undefined,
+        propertyId: formData.propertyId === 'none' ? undefined : formData.propertyId || undefined,
+        primaryPartnerId: formData.primaryPartnerId === 'none' ? undefined : formData.primaryPartnerId || undefined,
         startDate: formData.startDate || undefined,
         projectedFinishDate: formData.projectedFinishDate || undefined,
         materialDeliveryDate: formData.materialDeliveryDate || undefined,
         estimatedValue: formData.estimatedValue ? Number(formData.estimatedValue) : undefined,
-        templateId: formData.templateId || undefined
+        templateId: formData.templateId === 'none' ? undefined : formData.templateId || undefined
       }
 
       const project = await projectsApi.create(projectData)
@@ -279,7 +279,7 @@ export default function NewProjectPage() {
                     onValueChange={(value) => setFormData(prev => ({ 
                       ...prev, 
                       useTemplate: value === 'yes',
-                      templateId: value === 'no' ? '' : prev.templateId
+                      templateId: value === 'no' ? 'none' : prev.templateId
                     }))}
                     className="mt-2"
                   >
@@ -387,7 +387,7 @@ export default function NewProjectPage() {
                   ) : (
                     <Select 
                       value={formData.customerId} 
-                      onValueChange={(value) => setFormData(prev => ({ ...prev, customerId: value, propertyId: '' }))}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, customerId: value, propertyId: 'none' }))}
                     >
                       <SelectTrigger className={errors.customerId ? 'border-red-500' : ''}>
                         <SelectValue placeholder="Select customer" />
@@ -418,7 +418,7 @@ export default function NewProjectPage() {
                         <SelectValue placeholder="Select property" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">No specific property</SelectItem>
+                        <SelectItem value="none">No specific property</SelectItem>
                         {selectedCustomer.properties.map((property) => (
                           <SelectItem key={property.id} value={property.id}>
                             {property.name} - {property.address}, {property.city}, {property.state}
@@ -443,7 +443,7 @@ export default function NewProjectPage() {
                       <SelectValue placeholder="Select partner who brought this project" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">No partner attribution</SelectItem>
+                      <SelectItem value="none">No partner attribution</SelectItem>
                       {partners.map((partner) => (
                         <SelectItem key={partner.id} value={partner.id}>
                           <div>

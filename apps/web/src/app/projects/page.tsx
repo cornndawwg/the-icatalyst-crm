@@ -85,8 +85,8 @@ export default function ProjectsPage() {
   const [partners, setPartners] = useState<Partner[]>([])
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState({
-    status: '',
-    partnerId: '',
+    status: 'all',
+    partnerId: 'all',
     search: ''
   })
   const [pagination, setPagination] = useState({
@@ -102,7 +102,9 @@ export default function ProjectsPage() {
       
       const [projectsResponse, partnersResponse] = await Promise.all([
         projectsApi.getAll({
-          ...filters,
+          status: filters.status === 'all' ? '' : filters.status,
+          partnerId: filters.partnerId === 'all' ? '' : filters.partnerId,
+          search: filters.search,
           page: pagination.page,
           limit: pagination.limit
         }),
@@ -181,8 +183,8 @@ export default function ProjectsPage() {
 
   const resetFilters = () => {
     setFilters({
-      status: '',
-      partnerId: '',
+      status: 'all',
+      partnerId: 'all',
       search: ''
     })
     setPagination(prev => ({ ...prev, page: 1 }))
@@ -233,7 +235,7 @@ export default function ProjectsPage() {
                   <SelectValue placeholder="All Statuses" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Statuses</SelectItem>
+                  <SelectItem value="all">All Statuses</SelectItem>
                   <SelectItem value="planning">Planning</SelectItem>
                   <SelectItem value="active">Active</SelectItem>
                   <SelectItem value="completed">Completed</SelectItem>
@@ -251,7 +253,7 @@ export default function ProjectsPage() {
                   <SelectValue placeholder="All Partners" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Partners</SelectItem>
+                  <SelectItem value="all">All Partners</SelectItem>
                   {partners.map((partner) => (
                     <SelectItem key={partner.id} value={partner.id}>
                       {partner.companyName}
