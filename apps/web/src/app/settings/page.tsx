@@ -440,7 +440,7 @@ export default function SettingsPage() {
                   </div>
 
                   <div>
-                    <Label>Company Logo</Label>
+                    <Label htmlFor="company-logo">Company Logo</Label>
                     <div className="mt-2 flex items-center gap-4">
                       <div className="h-20 w-20 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
                         {companyInfo.logo ? (
@@ -456,9 +456,23 @@ export default function SettingsPage() {
                         )}
                       </div>
                       <div>
-                        <Button variant="outline" size="sm">
-                          <Upload className="mr-2 h-4 w-4" />
-                          Upload Logo
+                        <Button variant="outline" size="sm" asChild>
+                          <label htmlFor="company-logo">
+                            <Upload className="mr-2 h-4 w-4" />
+                            Upload Logo
+                            <input
+                              id="company-logo"
+                              type="file"
+                              accept="image/*"
+                              className="sr-only"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0]
+                                if (file) {
+                                  setCompanyInfo(prev => ({ ...prev, logo: file }))
+                                }
+                              }}
+                            />
+                          </label>
                         </Button>
                         <p className="text-xs text-gray-500 mt-1">
                           PNG, JPG up to 2MB
@@ -490,11 +504,11 @@ export default function SettingsPage() {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div>
-                    <Label>Email Provider</Label>
+                    <Label htmlFor="email-provider">Email Provider</Label>
                     <Select value={emailConfig.provider} onValueChange={(value) => 
                       setEmailConfig(prev => ({ ...prev, provider: value }))
                     }>
-                      <SelectTrigger className="mt-2">
+                      <SelectTrigger id="email-provider" className="mt-2">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -557,11 +571,11 @@ export default function SettingsPage() {
                         </div>
                       </div>
                       <div>
-                        <Label>Encryption</Label>
+                        <Label htmlFor="smtp-encryption">Encryption</Label>
                         <Select value={emailConfig.encryption} onValueChange={(value) => 
                           setEmailConfig(prev => ({ ...prev, encryption: value }))
                         }>
-                          <SelectTrigger className="mt-2">
+                          <SelectTrigger id="smtp-encryption" className="mt-2">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -858,10 +872,11 @@ export default function SettingsPage() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <Label>Two-Factor Authentication</Label>
+                        <Label htmlFor="two-factor">Two-Factor Authentication</Label>
                         <p className="text-sm text-gray-600">Add an extra layer of security to your account</p>
                       </div>
                       <Switch 
+                        id="two-factor"
                         checked={securitySettings.twoFactorEnabled}
                         onCheckedChange={(checked) => 
                           setSecuritySettings(prev => ({ ...prev, twoFactorEnabled: checked }))
@@ -870,10 +885,11 @@ export default function SettingsPage() {
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <Label>Login Notifications</Label>
+                        <Label htmlFor="login-notifications">Login Notifications</Label>
                         <p className="text-sm text-gray-600">Get notified when someone logs into your account</p>
                       </div>
                       <Switch 
+                        id="login-notifications"
                         checked={securitySettings.loginNotifications}
                         onCheckedChange={(checked) => 
                           setSecuritySettings(prev => ({ ...prev, loginNotifications: checked }))
@@ -906,10 +922,11 @@ export default function SettingsPage() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <Label>Email Notifications</Label>
+                        <Label htmlFor="email-notifications">Email Notifications</Label>
                         <p className="text-sm text-gray-600">Receive updates via email</p>
                       </div>
                       <Switch 
+                        id="email-notifications"
                         checked={notificationPrefs.emailNotifications}
                         onCheckedChange={(checked) => 
                           setNotificationPrefs(prev => ({ ...prev, emailNotifications: checked }))
@@ -918,10 +935,11 @@ export default function SettingsPage() {
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <Label>Weekly Reports</Label>
+                        <Label htmlFor="weekly-reports">Weekly Reports</Label>
                         <p className="text-sm text-gray-600">Get weekly summary of your activity</p>
                       </div>
                       <Switch 
+                        id="weekly-reports"
                         checked={notificationPrefs.weeklyReports}
                         onCheckedChange={(checked) => 
                           setNotificationPrefs(prev => ({ ...prev, weeklyReports: checked }))
@@ -930,10 +948,11 @@ export default function SettingsPage() {
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <Label>Partner Updates</Label>
+                        <Label htmlFor="partner-updates">Partner Updates</Label>
                         <p className="text-sm text-gray-600">Notifications about partner interactions</p>
                       </div>
                       <Switch 
+                        id="partner-updates"
                         checked={notificationPrefs.partnerUpdates}
                         onCheckedChange={(checked) => 
                           setNotificationPrefs(prev => ({ ...prev, partnerUpdates: checked }))

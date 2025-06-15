@@ -32,13 +32,6 @@ router.get('/organization', async (req: AuthenticatedRequest, res: Response): Pr
         logo: true,
         plan: true,
         status: true,
-        emailProvider: true,
-        smtpHost: true,
-        smtpPort: true,
-        smtpUsername: true,
-        smtpEncryption: true,
-        fromEmail: true,
-        fromName: true,
         settings: true
       }
     })
@@ -50,8 +43,19 @@ router.get('/organization', async (req: AuthenticatedRequest, res: Response): Pr
       return
     }
 
-    // Don't return the SMTP password
-    res.json(organization)
+    // Add default email settings if not present
+    const organizationWithDefaults = {
+      ...organization,
+      emailProvider: 'mailgun',
+      smtpHost: '',
+      smtpPort: 587,
+      smtpUsername: '',
+      smtpEncryption: 'tls',
+      fromEmail: 'noreply@company.com',
+      fromName: organization.name || 'Your Company'
+    }
+
+    res.json(organizationWithDefaults)
   } catch (error) {
     console.error('Error fetching organization settings:', error)
     res.status(500).json({ error: 'Failed to fetch organization settings', details: error.message })
@@ -92,22 +96,23 @@ router.put('/organization', async (req: AuthenticatedRequest, res: Response): Pr
       city,
       state,
       zipCode,
-      logo,
+      logo
+    }
+
+    // Add settings to the settings JSON field instead of individual columns
+    const currentSettings = {
       emailProvider,
       smtpHost,
       smtpPort: smtpPort ? parseInt(smtpPort) : null,
       smtpUsername,
+      smtpPassword: smtpPassword || '',
       smtpEncryption,
       fromEmail,
       fromName,
-      settings
+      ...settings
     }
-
-    // Only update password if provided
-    if (smtpPassword) {
-      // In production, encrypt the password
-      updateData.smtpPassword = smtpPassword
-    }
+    
+    updateData.settings = currentSettings
 
     const organization = await prisma.organization.update({
       where: { id: req.user!.organizationId },
@@ -123,13 +128,8 @@ router.put('/organization', async (req: AuthenticatedRequest, res: Response): Pr
         state: true,
         zipCode: true,
         logo: true,
-        emailProvider: true,
-        smtpHost: true,
-        smtpPort: true,
-        smtpUsername: true,
-        smtpEncryption: true,
-        fromEmail: true,
-        fromName: true,
+        plan: true,
+        status: true,
         settings: true
       }
     })
@@ -161,17 +161,9 @@ router.get('/user', async (req: AuthenticatedRequest, res: Response): Promise<vo
         lastName: true,
         email: true,
         role: true,
-        twoFactorEnabled: true,
-        emailNotifications: true,
-        smsNotifications: true,
-        browserNotifications: true,
-        weeklyReports: true,
-        partnerUpdates: true,
-        campaignResults: true,
-        googleCalendarToken: true,
-        outlookCalendarToken: true,
-        calendarSyncEnabled: true,
-        defaultReminderMinutes: true
+        status: true,
+        createdAt: true,
+        updatedAt: true
       }
     })
 
@@ -182,13 +174,20 @@ router.get('/user', async (req: AuthenticatedRequest, res: Response): Promise<vo
       return
     }
 
-    // Don't return actual tokens, just indicate if connected
+    // Return basic user info with default settings
     const userSettings = {
       ...user,
-      googleCalendarConnected: !!user.googleCalendarToken,
-      outlookCalendarConnected: !!user.outlookCalendarToken,
-      googleCalendarToken: undefined,
-      outlookCalendarToken: undefined
+      twoFactorEnabled: false,
+      emailNotifications: true,
+      smsNotifications: false,
+      browserNotifications: true,
+      weeklyReports: true,
+      partnerUpdates: true,
+      campaignResults: true,
+      googleCalendarConnected: false,
+      outlookCalendarConnected: false,
+      calendarSyncEnabled: false,
+      defaultReminderMinutes: 15
     }
 
     res.json(userSettings)
@@ -220,16 +219,7 @@ router.put('/user', async (req: AuthenticatedRequest, res: Response): Promise<vo
       where: { id: req.user!.userId },
       data: {
         firstName,
-        lastName,
-        twoFactorEnabled,
-        emailNotifications,
-        smsNotifications,
-        browserNotifications,
-        weeklyReports,
-        partnerUpdates,
-        campaignResults,
-        calendarSyncEnabled,
-        defaultReminderMinutes: defaultReminderMinutes ? parseInt(defaultReminderMinutes) : 15
+        lastName
       },
       select: {
         id: true,
@@ -237,15 +227,7 @@ router.put('/user', async (req: AuthenticatedRequest, res: Response): Promise<vo
         lastName: true,
         email: true,
         role: true,
-        twoFactorEnabled: true,
-        emailNotifications: true,
-        smsNotifications: true,
-        browserNotifications: true,
-        weeklyReports: true,
-        partnerUpdates: true,
-        campaignResults: true,
-        calendarSyncEnabled: true,
-        defaultReminderMinutes: true
+        status: true
       }
     })
 
