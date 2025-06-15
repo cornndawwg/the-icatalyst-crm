@@ -154,23 +154,6 @@ export default function ProjectDetailPage() {
     materialDeliveryDate: ''
   })
 
-  useEffect(() => {
-    const checkAuth = () => {
-      if (typeof window !== 'undefined') {
-        const token = localStorage.getItem('auth-token')
-        if (!token) {
-          router.push('/login')
-          return false
-        }
-      }
-      return true
-    }
-
-    if (checkAuth() && projectId) {
-      loadProject()
-    }
-  }, [router, projectId, loadProject])
-
   const loadProject = useCallback(async () => {
     try {
       setLoading(true)
@@ -199,6 +182,23 @@ export default function ProjectDetailPage() {
       setLoading(false)
     }
   }, [projectId])
+
+  useEffect(() => {
+    const checkAuth = () => {
+      if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('auth-token')
+        if (!token) {
+          router.push('/login')
+          return false
+        }
+      }
+      return true
+    }
+
+    if (checkAuth() && projectId) {
+      loadProject()
+    }
+  }, [router, projectId, loadProject])
 
   const handleSaveOverview = async () => {
     try {
