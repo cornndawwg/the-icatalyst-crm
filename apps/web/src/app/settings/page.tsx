@@ -37,18 +37,10 @@ export default function SettingsPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [testingEmail, setTestingEmail] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [mounted, setMounted] = useState(false)
   const [saving, setSaving] = useState(false)
-
-  // Handle client-side mounting
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   // Load settings from backend
   useEffect(() => {
-    if (!mounted) return
-
     const loadSettings = async () => {
       try {
         setLoading(true)
@@ -134,7 +126,7 @@ export default function SettingsPage() {
     }
     
     loadSettings()
-  }, [mounted, router])
+  }, [router])
   
   // Derived company info for form
   const [companyInfo, setCompanyInfo] = useState({
@@ -308,7 +300,7 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {!mounted || loading ? (
+      {loading ? (
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <Settings className="h-12 w-12 text-gray-400 mx-auto mb-4 animate-spin" />
