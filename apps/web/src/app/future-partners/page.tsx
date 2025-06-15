@@ -209,11 +209,10 @@ function FuturePartnersContent() {
         <div className="px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">Future Partners</h1>
-                <p className="text-sm text-gray-600 mt-1">
-                  Nurture discovered partners through email campaigns
-                </p>
-              </div>
+              <h1 className="text-2xl font-bold text-gray-900">Future Partners</h1>
+              <p className="text-sm text-gray-600 mt-1">
+                Nurture discovered partners through email campaigns
+              </p>
             </div>
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => router.push('/future-partners/templates')}>
@@ -231,7 +230,7 @@ function FuturePartnersContent() {
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Main content */}
       <main className="p-4 sm:p-6 lg:p-8">

@@ -146,7 +146,7 @@ export default function PartnerDetailPage() {
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Main content */}
       <main className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
