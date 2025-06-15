@@ -8,33 +8,41 @@ router.use(authenticateToken as any)
 // Get organization settings
 router.get('/organization', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
+    const { prisma } = req.app.locals
     console.log('Getting organization settings for user:', req.user?.userId, 'org:', req.user?.organizationId)
     
-    // Return mock data for now to test if the issue is database-related
-    const mockOrganization = {
-      id: req.user?.organizationId || 'mock-org-id',
-      name: 'Test Company',
-      email: 'test@company.com',
-      phone: '+1-555-0123',
-      website: 'https://company.com',
-      address: '123 Main St',
-      city: 'Anytown',
-      state: 'CA',
-      zipCode: '12345',
-      logo: null,
-      plan: 'professional',
-      status: 'active',
-      emailProvider: 'mailgun',
-      smtpHost: '',
-      smtpPort: 587,
-      smtpUsername: '',
-      smtpEncryption: 'tls',
-      fromEmail: 'noreply@company.com',
-      fromName: 'Test Company'
+    const organization = await prisma.organization.findUnique({
+      where: { id: req.user!.organizationId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        website: true,
+        address: true,
+        city: true,
+        state: true,
+        zipCode: true,
+        logo: true,
+        plan: true,
+        status: true,
+        emailProvider: true,
+        smtpHost: true,
+        smtpPort: true,
+        smtpUsername: true,
+        smtpEncryption: true,
+        fromEmail: true,
+        fromName: true
+      }
+    })
+
+    if (!organization) {
+      res.status(404).json({ error: 'Organization not found' })
+      return
     }
 
-    console.log('Returning mock organization data')
-    res.json(mockOrganization)
+    console.log('Returning organization data from database')
+    res.json(organization)
   } catch (error) {
     console.error('Error fetching organization settings:', error)
     res.status(500).json({ error: 'Failed to fetch organization settings', details: error.message })
@@ -45,6 +53,8 @@ router.get('/organization', async (req: AuthenticatedRequest, res: Response): Pr
 router.put('/organization', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { prisma } = req.app.locals
+    console.log('Updating organization settings:', req.body)
+    
     const {
       name,
       email,
@@ -62,38 +72,30 @@ router.put('/organization', async (req: AuthenticatedRequest, res: Response): Pr
       smtpPassword,
       smtpEncryption,
       fromEmail,
-      fromName,
-      settings
+      fromName
     } = req.body
 
-    const updateData: any = {
-      name,
-      email,
-      phone,
-      website,
-      address,
-      city,
-      state,
-      zipCode,
-      logo
-    }
+    // Build update data object
+    const updateData: any = {}
+    if (name !== undefined) updateData.name = name
+    if (email !== undefined) updateData.email = email
+    if (phone !== undefined) updateData.phone = phone
+    if (website !== undefined) updateData.website = website
+    if (address !== undefined) updateData.address = address
+    if (city !== undefined) updateData.city = city
+    if (state !== undefined) updateData.state = state
+    if (zipCode !== undefined) updateData.zipCode = zipCode
+    if (logo !== undefined) updateData.logo = logo
+    if (emailProvider !== undefined) updateData.emailProvider = emailProvider
+    if (smtpHost !== undefined) updateData.smtpHost = smtpHost
+    if (smtpPort !== undefined) updateData.smtpPort = parseInt(smtpPort)
+    if (smtpUsername !== undefined) updateData.smtpUsername = smtpUsername
+    if (smtpPassword !== undefined) updateData.smtpPassword = smtpPassword // TODO: Encrypt before saving
+    if (smtpEncryption !== undefined) updateData.smtpEncryption = smtpEncryption
+    if (fromEmail !== undefined) updateData.fromEmail = fromEmail
+    if (fromName !== undefined) updateData.fromName = fromName
 
-    // Add settings to the settings JSON field instead of individual columns
-    const currentSettings = {
-      emailProvider,
-      smtpHost,
-      smtpPort: smtpPort ? parseInt(smtpPort) : null,
-      smtpUsername,
-      smtpPassword: smtpPassword || '',
-      smtpEncryption,
-      fromEmail,
-      fromName,
-      ...settings
-    }
-    
-    updateData.settings = currentSettings
-
-    const organization = await prisma.organization.update({
+    const updatedOrganization = await prisma.organization.update({
       where: { id: req.user!.organizationId },
       data: updateData,
       select: {
@@ -109,11 +111,18 @@ router.put('/organization', async (req: AuthenticatedRequest, res: Response): Pr
         logo: true,
         plan: true,
         status: true,
-        settings: true
+        emailProvider: true,
+        smtpHost: true,
+        smtpPort: true,
+        smtpUsername: true,
+        smtpEncryption: true,
+        fromEmail: true,
+        fromName: true
       }
     })
 
-    res.json(organization)
+    console.log('Organization settings updated in database')
+    res.json(updatedOrganization)
   } catch (error) {
     console.error('Error updating organization settings:', error)
     res.status(500).json({ error: 'Failed to update organization settings' })
@@ -123,33 +132,50 @@ router.put('/organization', async (req: AuthenticatedRequest, res: Response): Pr
 // Get user settings
 router.get('/user', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
+    const { prisma } = req.app.locals
     console.log('Getting user settings for user:', req.user?.userId)
     
-    // Return mock data for now to test if the issue is database-related
-    const mockUser = {
-      id: req.user?.userId || 'mock-user-id',
-      firstName: 'Test',
-      lastName: 'User',
-      email: 'test@company.com',
-      role: 'owner',
-      status: 'active',
-      twoFactorEnabled: false,
-      emailNotifications: true,
-      smsNotifications: false,
-      browserNotifications: true,
-      weeklyReports: true,
-      partnerUpdates: true,
-      campaignResults: true,
-      googleCalendarConnected: false,
-      outlookCalendarConnected: false,
-      calendarSyncEnabled: false,
-      defaultReminderMinutes: 15,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+    const user = await prisma.user.findUnique({
+      where: { id: req.user!.userId },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        role: true,
+        status: true,
+        twoFactorEnabled: true,
+        emailNotifications: true,
+        smsNotifications: true,
+        browserNotifications: true,
+        weeklyReports: true,
+        partnerUpdates: true,
+        campaignResults: true,
+        googleCalendarToken: true,
+        outlookCalendarToken: true,
+        calendarSyncEnabled: true,
+        defaultReminderMinutes: true,
+        createdAt: true,
+        updatedAt: true
+      }
+    })
+
+    if (!user) {
+      res.status(404).json({ error: 'User not found' })
+      return
     }
 
-    console.log('Returning mock user data')
-    res.json(mockUser)
+    // Transform token presence to connected status
+    const userData = {
+      ...user,
+      googleCalendarConnected: !!user.googleCalendarToken,
+      outlookCalendarConnected: !!user.outlookCalendarToken
+    }
+    delete userData.googleCalendarToken
+    delete userData.outlookCalendarToken
+
+    console.log('Returning user data from database')
+    res.json(userData)
   } catch (error) {
     console.error('Error fetching user settings:', error)
     res.status(500).json({ error: 'Failed to fetch user settings', details: error.message })
@@ -160,6 +186,8 @@ router.get('/user', async (req: AuthenticatedRequest, res: Response): Promise<vo
 router.put('/user', async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { prisma } = req.app.locals
+    console.log('Updating user settings:', req.body)
+    
     const {
       firstName,
       lastName,
@@ -174,23 +202,57 @@ router.put('/user', async (req: AuthenticatedRequest, res: Response): Promise<vo
       defaultReminderMinutes
     } = req.body
 
-    const user = await prisma.user.update({
+    // Build update data object
+    const updateData: any = {}
+    if (firstName !== undefined) updateData.firstName = firstName
+    if (lastName !== undefined) updateData.lastName = lastName
+    if (twoFactorEnabled !== undefined) updateData.twoFactorEnabled = twoFactorEnabled
+    if (emailNotifications !== undefined) updateData.emailNotifications = emailNotifications
+    if (smsNotifications !== undefined) updateData.smsNotifications = smsNotifications
+    if (browserNotifications !== undefined) updateData.browserNotifications = browserNotifications
+    if (weeklyReports !== undefined) updateData.weeklyReports = weeklyReports
+    if (partnerUpdates !== undefined) updateData.partnerUpdates = partnerUpdates
+    if (campaignResults !== undefined) updateData.campaignResults = campaignResults
+    if (calendarSyncEnabled !== undefined) updateData.calendarSyncEnabled = calendarSyncEnabled
+    if (defaultReminderMinutes !== undefined) updateData.defaultReminderMinutes = defaultReminderMinutes
+
+    const updatedUser = await prisma.user.update({
       where: { id: req.user!.userId },
-      data: {
-        firstName,
-        lastName
-      },
+      data: updateData,
       select: {
         id: true,
         firstName: true,
         lastName: true,
         email: true,
         role: true,
-        status: true
+        status: true,
+        twoFactorEnabled: true,
+        emailNotifications: true,
+        smsNotifications: true,
+        browserNotifications: true,
+        weeklyReports: true,
+        partnerUpdates: true,
+        campaignResults: true,
+        googleCalendarToken: true,
+        outlookCalendarToken: true,
+        calendarSyncEnabled: true,
+        defaultReminderMinutes: true,
+        createdAt: true,
+        updatedAt: true
       }
     })
 
-    res.json(user)
+    // Transform token presence to connected status
+    const userData = {
+      ...updatedUser,
+      googleCalendarConnected: !!updatedUser.googleCalendarToken,
+      outlookCalendarConnected: !!updatedUser.outlookCalendarToken
+    }
+    delete userData.googleCalendarToken
+    delete userData.outlookCalendarToken
+
+    console.log('User settings updated in database')
+    res.json(userData)
   } catch (error) {
     console.error('Error updating user settings:', error)
     res.status(500).json({ error: 'Failed to update user settings' })
