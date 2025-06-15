@@ -205,7 +205,7 @@ export default function ProjectDetailPage() {
       const updateData = {
         name: editForm.name,
         description: editForm.description,
-        status: editForm.status,
+        status: editForm.status as 'planning' | 'active' | 'completed' | 'on-hold' | 'cancelled',
         progressPercent: editForm.progressPercent,
         startDate: editForm.startDate || undefined,
         endDate: editForm.endDate || undefined,
