@@ -96,23 +96,6 @@ export default function ProjectsPage() {
     totalPages: 0
   })
 
-  useEffect(() => {
-    const checkAuth = () => {
-      if (typeof window !== 'undefined') {
-        const token = localStorage.getItem('auth-token')
-        if (!token) {
-          router.push('/login')
-          return false
-        }
-      }
-      return true
-    }
-
-    if (checkAuth()) {
-      loadData()
-    }
-  }, [router, filters, pagination.page, loadData])
-
   const loadData = useCallback(async () => {
     try {
       setLoading(true)
@@ -139,6 +122,23 @@ export default function ProjectsPage() {
       setLoading(false)
     }
   }, [filters, pagination.page, pagination.limit])
+
+  useEffect(() => {
+    const checkAuth = () => {
+      if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('auth-token')
+        if (!token) {
+          router.push('/login')
+          return false
+        }
+      }
+      return true
+    }
+
+    if (checkAuth()) {
+      loadData()
+    }
+  }, [router, filters, pagination.page, loadData])
 
   const getStatusColor = (status: string) => {
     switch (status) {
