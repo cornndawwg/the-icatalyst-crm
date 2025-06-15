@@ -12,6 +12,7 @@ import { customerRoutes } from './routes/customers'
 import { proposalRoutes } from './routes/proposals'
 import { emailRoutes } from './routes/email'
 import { settingsRoutes } from './routes/settings'
+import { projectRoutes } from './routes/projects'
 
 // Load environment variables
 dotenv.config()
@@ -59,6 +60,7 @@ app.use('/api/customers', customerRoutes)
 app.use('/api/proposals', proposalRoutes)
 app.use('/api/email', emailRoutes)
 app.use('/api/settings', settingsRoutes)
+app.use('/api/projects', projectRoutes)
 
 // 404 handler
 app.use('*', (req, res) => {

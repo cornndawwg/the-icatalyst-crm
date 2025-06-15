@@ -306,4 +306,165 @@ export const settingsApi = {
   }
 }
 
+// Projects API functions
+export const projectsApi = {
+  // Get all projects with filtering
+  getAll: async (filters: {
+    status?: string
+    partnerId?: string
+    customerId?: string
+    search?: string
+    page?: number
+    limit?: number
+  } = {}) => {
+    const params = new URLSearchParams()
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined) params.append(key, value.toString())
+    })
+    
+    const response = await api.get(`/projects?${params}`)
+    return response.data
+  },
+
+  // Get project by ID
+  getById: async (id: string) => {
+    const response = await api.get(`/projects/${id}`)
+    return response.data
+  },
+
+  // Create new project
+  create: async (data: {
+    name: string
+    description?: string
+    projectType: 'new-install' | 'upgrade' | 'service' | 'design-only'
+    customerId: string
+    propertyId?: string
+    primaryPartnerId?: string
+    startDate?: string
+    projectedFinishDate?: string
+    materialDeliveryDate?: string
+    estimatedValue?: number
+    templateId?: string
+  }) => {
+    const response = await api.post('/projects', data)
+    return response.data
+  },
+
+  // Update project
+  update: async (id: string, data: {
+    name?: string
+    description?: string
+    status?: 'planning' | 'active' | 'completed' | 'on-hold' | 'cancelled'
+    projectType?: 'new-install' | 'upgrade' | 'service' | 'design-only'
+    startDate?: string
+    endDate?: string
+    projectedFinishDate?: string
+    materialDeliveryDate?: string
+    estimatedValue?: number
+    actualCost?: number
+    materialsCost?: number
+    laborCost?: number
+    hardwareCost?: number
+    progressPercent?: number
+    primaryPartnerId?: string
+  }) => {
+    const response = await api.put(`/projects/${id}`, data)
+    return response.data
+  },
+
+  // Delete project
+  delete: async (id: string) => {
+    const response = await api.delete(`/projects/${id}`)
+    return response.data
+  },
+
+  // Add partner to project
+  addPartner: async (id: string, data: {
+    partnerId: string
+    role?: string
+  }) => {
+    const response = await api.post(`/projects/${id}/partners`, data)
+    return response.data
+  },
+
+  // Remove partner from project
+  removePartner: async (id: string, partnerId: string) => {
+    const response = await api.delete(`/projects/${id}/partners/${partnerId}`)
+    return response.data
+  },
+
+  // Add team member to project
+  addMember: async (id: string, data: {
+    userId: string
+    role: 'project-manager' | 'technician' | 'laborer' | 'subcontractor'
+    isLaborer?: boolean
+  }) => {
+    const response = await api.post(`/projects/${id}/members`, data)
+    return response.data
+  },
+
+  // Get project tasks
+  getTasks: async (id: string) => {
+    const response = await api.get(`/projects/${id}/tasks`)
+    return response.data
+  },
+
+  // Create project task
+  createTask: async (id: string, data: {
+    title: string
+    description?: string
+    priority?: 'low' | 'medium' | 'high'
+    dueDate?: string
+    assignedTo?: string
+  }) => {
+    const response = await api.post(`/projects/${id}/tasks`, data)
+    return response.data
+  },
+
+  // Update task
+  updateTask: async (id: string, taskId: string, data: {
+    status?: 'pending' | 'in-progress' | 'completed'
+    title?: string
+    description?: string
+    priority?: 'low' | 'medium' | 'high'
+    dueDate?: string
+    assignedTo?: string
+  }) => {
+    const response = await api.put(`/projects/${id}/tasks/${taskId}`, data)
+    return response.data
+  },
+
+  // Create change order
+  createChangeOrder: async (id: string, data: {
+    title: string
+    description: string
+    reason: 'scope-change' | 'cost-adjustment' | 'timeline-change'
+    costChange: number
+  }) => {
+    const response = await api.post(`/projects/${id}/change-orders`, data)
+    return response.data
+  },
+
+  // Approve/reject change order
+  updateChangeOrder: async (id: string, changeOrderId: string, status: 'approved' | 'rejected') => {
+    const response = await api.put(`/projects/${id}/change-orders/${changeOrderId}`, { status })
+    return response.data
+  },
+
+  // Get project activity
+  getActivity: async (id: string, limit: number = 50) => {
+    const response = await api.get(`/projects/${id}/activity?limit=${limit}`)
+    return response.data
+  },
+
+  // Add activity note
+  addNote: async (id: string, data: {
+    title?: string
+    description: string
+  }) => {
+    const response = await api.post(`/projects/${id}/activity`, data)
+    return response.data
+  }
+}
+
 export default api

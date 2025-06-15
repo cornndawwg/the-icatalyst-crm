@@ -51,6 +51,7 @@ model Organization {
   projects    Project[]
   proposals   Proposal[]
   campaigns   EmailCampaign[]
+  projectTemplates ProjectTemplate[]
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -157,6 +158,8 @@ model Partner {
   // Relationships
   interactions     PartnerInteraction[]
   leads            Lead[]     // Leads generated from this partner
+  primaryProjects  Project[]  @relation("PrimaryPartnerProjects") // Projects where this is primary partner
+  projectPartners  ProjectPartner[] @relation("ProjectPartners") // Additional projects they're involved in
   
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
@@ -331,13 +334,31 @@ model Project {
   
   name           String
   description    String?
-  status         String       // planning, in-progress, completed, on-hold, cancelled
+  status         String       // planning, active, completed, on-hold, cancelled
   
   // Project Details
   projectType    String       // new-install, upgrade, service, design-only
   startDate      DateTime?
   endDate        DateTime?
+  projectedFinishDate DateTime?
+  materialDeliveryDate DateTime?
+  
+  // Financial Tracking
   estimatedValue Float?
+  actualCost     Float?       @default(0)
+  materialsCost  Float?       @default(0)
+  laborCost      Float?       @default(0)
+  hardwareCost   Float?       @default(0)
+  
+  // Progress Tracking
+  progressPercent Int         @default(0) // 0-100
+  
+  // Partner Attribution
+  primaryPartnerId String?    // Partner who brought this project
+  primaryPartner   Partner?   @relation("PrimaryPartnerProjects", fields: [primaryPartnerId], references: [id], onDelete: SetNull)
+  
+  // Template Reference
+  templateId     String?      // If created from template
   
   // Relationships
   customerId     String
@@ -347,6 +368,14 @@ model Project {
   
   proposals      Proposal[]
   
+  // Enhanced Relationships
+  projectPartners ProjectPartner[] // Additional partners involved
+  projectMembers  ProjectMember[]  // Team assignments
+  documents       ProjectDocument[]
+  activityLogs    ProjectActivity[]
+  changeOrders    ChangeOrder[]
+  tasks           ProjectTask[]
+  
   // Simple Milestone Tracking
   milestones     Json?        // Simple JSON array of milestones
   
@@ -355,6 +384,7 @@ model Project {
   
   @@index([organizationId, status])
   @@index([customerId])
+  @@index([primaryPartnerId])
 }
 
 // ==========================================
@@ -453,4 +483,163 @@ model EmailCampaign {
   
   @@index([organizationId, type])
   @@index([status])
+}
+
+// ==========================================
+// PROJECT ENHANCEMENT TABLES
+// ==========================================
+
+// Additional partners involved in a project (beyond primary)
+model ProjectPartner {
+  id        String  @id @default(uuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  partnerId String
+  partner   Partner @relation("ProjectPartners", fields: [partnerId], references: [id], onDelete: Cascade)
+  
+  role      String? // collaborator, consultant, subcontractor
+  addedAt   DateTime @default(now())
+  
+  @@unique([projectId, partnerId])
+  @@index([projectId])
+  @@index([partnerId])
+}
+
+// Team members assigned to projects
+model ProjectMember {
+  id       String  @id @default(uuid())
+  projectId String
+  project  Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId   String
+  
+  role     String  // project-manager, technician, laborer, subcontractor
+  isLaborer Boolean @default(false) // If true, their calendar gets blocked
+  addedAt  DateTime @default(now())
+  
+  @@unique([projectId, userId])
+  @@index([projectId])
+  @@index([userId])
+}
+
+// Project documents storage
+model ProjectDocument {
+  id         String  @id @default(uuid())
+  projectId  String
+  project    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  name       String
+  fileName   String  // Original file name
+  fileUrl    String  // Storage URL
+  fileSize   Int     // Size in bytes
+  mimeType   String  // File type
+  category   String  // agreement, permit, plan, photo, other
+  
+  uploadedBy String  // User ID who uploaded
+  uploadedAt DateTime @default(now())
+  
+  @@index([projectId])
+  @@index([category])
+}
+
+// Project activity log for tracking changes
+model ProjectActivity {
+  id        String  @id @default(uuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  type      String  // status-change, budget-update, member-added, document-uploaded, note-added
+  title     String  // Brief description of activity
+  description String? // Detailed description
+  
+  // Change tracking
+  oldValue  String?
+  newValue  String?
+  
+  createdBy String  // User ID who made the change
+  createdAt DateTime @default(now())
+  
+  @@index([projectId])
+  @@index([createdAt])
+}
+
+// Change orders for scope/budget changes
+model ChangeOrder {
+  id          String  @id @default(uuid())
+  projectId   String
+  project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  title       String
+  description String
+  reason      String  // scope-change, cost-adjustment, timeline-change
+  
+  // Financial impact
+  costChange  Float   // Positive or negative
+  
+  // Status
+  status      String  // pending, approved, rejected
+  approvedBy  String? // User ID who approved
+  approvedAt  DateTime?
+  
+  createdBy   String  // User ID who created
+  createdAt   DateTime @default(now())
+  
+  @@index([projectId])
+  @@index([status])
+}
+
+// Project tasks and milestones
+model ProjectTask {
+  id          String   @id @default(uuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  title       String
+  description String?
+  status      String   // pending, in-progress, completed
+  priority    String   // low, medium, high
+  
+  // Dates
+  dueDate     DateTime?
+  completedAt DateTime?
+  
+  // Assignment
+  assignedTo  String?  // User ID
+  
+  // Order
+  sortOrder   Int      @default(0)
+  
+  createdBy   String   // User ID who created
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([projectId])
+  @@index([status])
+  @@index([dueDate])
+}
+
+// Project templates for common project types
+model ProjectTemplate {
+  id             String @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  name           String
+  description    String?
+  projectType    String // new-install, upgrade, service, design-only
+  category       String // theater-room, whole-home-audio, security, lighting
+  
+  // Default values
+  estimatedDuration Int? // Days
+  defaultTasks   Json? // Default task list
+  defaultBudget  Float?
+  
+  // Usage tracking
+  timesUsed      Int    @default(0)
+  
+  createdBy      String // User ID who created
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  @@index([organizationId])
+  @@index([category])
 }
