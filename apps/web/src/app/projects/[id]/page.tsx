@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -21,8 +21,6 @@ import {
   ArrowLeft,
   Building2,
   User,
-  Calendar,
-  DollarSign,
   FileText,
   Users,
   Activity,
@@ -31,9 +29,7 @@ import {
   X,
   Plus,
   CheckCircle,
-  Clock,
   AlertCircle,
-  Trash2,
   Download,
   Settings
 } from 'lucide-react'
@@ -142,7 +138,6 @@ export default function ProjectDetailPage() {
   const projectId = params?.id as string
 
   const [project, setProject] = useState<Project | null>(null)
-  const [partners, setPartners] = useState<Partner[]>([])
   const [loading, setLoading] = useState(true)
   const [editingOverview, setEditingOverview] = useState(false)
   const [editingFinancials, setEditingFinancials] = useState(false)
@@ -179,7 +174,6 @@ export default function ProjectDetailPage() {
 
     if (checkAuth() && projectId) {
       loadProject()
-      loadPartners()
     }
   }, [router, projectId])
 
@@ -209,15 +203,6 @@ export default function ProjectDetailPage() {
       console.error('Error loading project:', error)
     } finally {
       setLoading(false)
-    }
-  }
-
-  const loadPartners = async () => {
-    try {
-      const partnersData = await partnersApi.getAll()
-      setPartners(partnersData || [])
-    } catch (error) {
-      console.error('Error loading partners:', error)
     }
   }
 
@@ -313,7 +298,7 @@ export default function ProjectDetailPage() {
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Project Not Found</h2>
-          <p className="text-gray-600 mb-4">The project you're looking for doesn't exist.</p>
+          <p className="text-gray-600 mb-4">The project you&apos;re looking for doesn&apos;t exist.</p>
           <Button onClick={() => router.push('/projects')}>
             Back to Projects
           </Button>

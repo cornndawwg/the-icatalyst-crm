@@ -22,12 +22,11 @@ import {
   User,
   Calendar,
   DollarSign,
-  FileText,
   CheckCircle,
   AlertCircle,
   Plus
 } from 'lucide-react'
-import { projectsApi, partnersApi, authApi } from '@/lib/api'
+import { projectsApi, partnersApi } from '@/lib/api'
 
 interface Customer {
   id: string
@@ -173,7 +172,7 @@ export default function NewProjectPage() {
       const projectData = {
         name: formData.name,
         description: formData.description || undefined,
-        projectType: formData.projectType as any,
+        projectType: formData.projectType as 'new-install' | 'upgrade' | 'service' | 'design-only',
         customerId: formData.customerId,
         propertyId: formData.propertyId || undefined,
         primaryPartnerId: formData.primaryPartnerId || undefined,
@@ -375,7 +374,7 @@ export default function NewProjectPage() {
                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                       <User className="h-8 w-8 text-gray-400 mx-auto mb-2" />
                       <p className="text-sm text-gray-600 mb-3">
-                        No customers found. You'll need to add a customer first.
+                        No customers found. You&apos;ll need to add a customer first.
                       </p>
                       <Button 
                         variant="outline" 
@@ -615,7 +614,7 @@ export default function NewProjectPage() {
                           No customer selected
                         </p>
                         <p className="text-sm text-amber-700">
-                          You'll need to add a customer before you can create this project.
+                          You&apos;ll need to add a customer before you can create this project.
                         </p>
                       </div>
                     </div>
