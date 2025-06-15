@@ -2,10 +2,8 @@ import { Router, Request, Response } from 'express'
 import { authenticateToken, AuthenticatedRequest } from '../middleware/auth'
 import bcrypt from 'bcrypt'
 
-// Import Prisma from the database package
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+// Import Prisma from the database package (same as auth.ts)
+const { prisma } = require('@icatalyst/database')
 
 const router = Router()
 router.use(authenticateToken as any)

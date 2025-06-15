@@ -12,7 +12,7 @@
     "build": "npm run install:all",
     "build:api": "npm run install:database && npm run install:api",
     "build:web": "npm run install:web && cd apps/web && npm run build",
-    "start": "cd apps/api && npx tsx src/index.ts",
+    "start": "npm run generate && cd apps/api && npx tsx src/index.ts",
     "start:web": "cd apps/web && npm start",
     "db:push": "cd packages/database && npx prisma db push"
   },
