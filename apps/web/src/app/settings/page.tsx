@@ -299,7 +299,7 @@ export default function SettingsPage() {
     { id: 'security', label: 'Security', icon: Shield },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'data', label: 'Data & Export', icon: Download }
-  ]
+  ];
 
   return (
     <DashboardLayout>
