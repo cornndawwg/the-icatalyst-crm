@@ -10,52 +10,31 @@ router.get('/organization', async (req: AuthenticatedRequest, res: Response): Pr
   try {
     console.log('Getting organization settings for user:', req.user?.userId, 'org:', req.user?.organizationId)
     
-    const { prisma } = req.app.locals
-    if (!prisma) {
-      console.error('Prisma client not available')
-      res.status(500).json({ error: 'Database connection not available' })
-      return
-    }
-
-    const organization = await prisma.organization.findUnique({
-      where: { id: req.user!.organizationId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        website: true,
-        address: true,
-        city: true,
-        state: true,
-        zipCode: true,
-        logo: true,
-        plan: true,
-        status: true,
-        settings: true
-      }
-    })
-
-    console.log('Found organization:', organization?.id)
-
-    if (!organization) {
-      res.status(404).json({ error: 'Organization not found' })
-      return
-    }
-
-    // Add default email settings if not present
-    const organizationWithDefaults = {
-      ...organization,
+    // Return mock data for now to test if the issue is database-related
+    const mockOrganization = {
+      id: req.user?.organizationId || 'mock-org-id',
+      name: 'Test Company',
+      email: 'test@company.com',
+      phone: '+1-555-0123',
+      website: 'https://company.com',
+      address: '123 Main St',
+      city: 'Anytown',
+      state: 'CA',
+      zipCode: '12345',
+      logo: null,
+      plan: 'professional',
+      status: 'active',
       emailProvider: 'mailgun',
       smtpHost: '',
       smtpPort: 587,
       smtpUsername: '',
       smtpEncryption: 'tls',
       fromEmail: 'noreply@company.com',
-      fromName: organization.name || 'Your Company'
+      fromName: 'Test Company'
     }
 
-    res.json(organizationWithDefaults)
+    console.log('Returning mock organization data')
+    res.json(mockOrganization)
   } catch (error) {
     console.error('Error fetching organization settings:', error)
     res.status(500).json({ error: 'Failed to fetch organization settings', details: error.message })
@@ -146,37 +125,14 @@ router.get('/user', async (req: AuthenticatedRequest, res: Response): Promise<vo
   try {
     console.log('Getting user settings for user:', req.user?.userId)
     
-    const { prisma } = req.app.locals
-    if (!prisma) {
-      console.error('Prisma client not available')
-      res.status(500).json({ error: 'Database connection not available' })
-      return
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { id: req.user!.userId },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        role: true,
-        status: true,
-        createdAt: true,
-        updatedAt: true
-      }
-    })
-
-    console.log('Found user:', user?.id)
-
-    if (!user) {
-      res.status(404).json({ error: 'User not found' })
-      return
-    }
-
-    // Return basic user info with default settings
-    const userSettings = {
-      ...user,
+    // Return mock data for now to test if the issue is database-related
+    const mockUser = {
+      id: req.user?.userId || 'mock-user-id',
+      firstName: 'Test',
+      lastName: 'User',
+      email: 'test@company.com',
+      role: 'owner',
+      status: 'active',
       twoFactorEnabled: false,
       emailNotifications: true,
       smsNotifications: false,
@@ -187,10 +143,13 @@ router.get('/user', async (req: AuthenticatedRequest, res: Response): Promise<vo
       googleCalendarConnected: false,
       outlookCalendarConnected: false,
       calendarSyncEnabled: false,
-      defaultReminderMinutes: 15
+      defaultReminderMinutes: 15,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     }
 
-    res.json(userSettings)
+    console.log('Returning mock user data')
+    res.json(mockUser)
   } catch (error) {
     console.error('Error fetching user settings:', error)
     res.status(500).json({ error: 'Failed to fetch user settings', details: error.message })
