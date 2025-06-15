@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -33,7 +33,7 @@ import {
   Download,
   Settings
 } from 'lucide-react'
-import { projectsApi, partnersApi } from '@/lib/api'
+import { projectsApi } from '@/lib/api'
 
 interface Project {
   id: string
@@ -125,12 +125,6 @@ interface Project {
   updatedAt: string
 }
 
-interface Partner {
-  id: string
-  companyName: string
-  contactName: string
-  type: string
-}
 
 export default function ProjectDetailPage() {
   const router = useRouter()
@@ -175,9 +169,9 @@ export default function ProjectDetailPage() {
     if (checkAuth() && projectId) {
       loadProject()
     }
-  }, [router, projectId])
+  }, [router, projectId, loadProject])
 
-  const loadProject = async () => {
+  const loadProject = useCallback(async () => {
     try {
       setLoading(true)
       const projectData = await projectsApi.getById(projectId)
@@ -204,7 +198,7 @@ export default function ProjectDetailPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [projectId])
 
   const handleSaveOverview = async () => {
     try {
