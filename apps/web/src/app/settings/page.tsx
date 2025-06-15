@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import DashboardLayout from '@/components/layout/dashboard-layout'
 import Image from 'next/image'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -301,7 +302,7 @@ export default function SettingsPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <DashboardLayout>
       {loading ? (
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
@@ -312,7 +313,7 @@ export default function SettingsPage() {
       ) : (
         <>
           {/* Header */}
-          <header className="bg-white shadow-sm border-b">
+          <div className="bg-white shadow-sm border-b">
             <div className="px-4 sm:px-6 lg:px-8 py-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -1007,6 +1008,6 @@ export default function SettingsPage() {
         </main>
         </>
       )}
-    </div>
+    </DashboardLayout>
   )
 }

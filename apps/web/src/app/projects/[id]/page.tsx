@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
+import DashboardLayout from '@/components/layout/dashboard-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -277,34 +278,38 @@ export default function ProjectDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Settings className="h-12 w-12 text-gray-400 mx-auto mb-4 animate-spin" />
-          <p className="text-gray-600">Loading project...</p>
+      <DashboardLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <Settings className="h-12 w-12 text-gray-400 mx-auto mb-4 animate-spin" />
+            <p className="text-gray-600">Loading project...</p>
+          </div>
         </div>
-      </div>
+      </DashboardLayout>
     )
   }
 
   if (!project) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Project Not Found</h2>
-          <p className="text-gray-600 mb-4">The project you&apos;re looking for doesn&apos;t exist.</p>
-          <Button onClick={() => router.push('/projects')}>
-            Back to Projects
-          </Button>
+      <DashboardLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">Project Not Found</h2>
+            <p className="text-gray-600 mb-4">The project you&apos;re looking for doesn&apos;t exist.</p>
+            <Button onClick={() => router.push('/projects')}>
+              Back to Projects
+            </Button>
+          </div>
         </div>
-      </div>
+      </DashboardLayout>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <DashboardLayout>
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <div className="bg-white shadow-sm border-b">
         <div className="px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -344,7 +349,7 @@ export default function ProjectDetailPage() {
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Content */}
       <div className="px-4 sm:px-6 lg:px-8 py-6">
@@ -840,6 +845,6 @@ export default function ProjectDetailPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </DashboardLayout>
   )
 }

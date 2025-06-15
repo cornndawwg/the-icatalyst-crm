@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import DashboardLayout from '@/components/layout/dashboard-layout'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -191,9 +192,9 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <DashboardLayout>
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <div className="bg-white shadow-sm border-b">
         <div className="px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
@@ -208,7 +209,7 @@ export default function ProjectsPage() {
             </Button>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Filters and Search */}
       <div className="px-4 sm:px-6 lg:px-8 py-6">
@@ -447,6 +448,6 @@ export default function ProjectsPage() {
           </>
         )}
       </div>
-    </div>
+    </DashboardLayout>
   )
 }

@@ -1,60 +1,73 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import DashboardLayout from '@/components/layout/dashboard-layout'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ArrowLeft, Loader2 } from 'lucide-react'
-import { partnersApi } from '@/lib/api'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
+import { z } from 'zod'
+import { partnersApi } from '@/lib/api'
 
 const partnerSchema = z.object({
-  type: z.enum(['interior-designer', 'builder', 'architect']),
+  type: z.enum(['interior-designer', 'builder', 'architect'], {
+    required_error: 'Please select a partner type'
+  }),
   companyName: z.string().min(1, 'Company name is required'),
   contactName: z.string().min(1, 'Contact name is required'),
-  email: z.string().email('Invalid email address'),
+  email: z.string().email('Please enter a valid email address'),
   phone: z.string().optional(),
-  website: z.string().url('Invalid URL').optional().or(z.literal('')),
+  website: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
   specialties: z.string().optional(),
   notes: z.string().optional()
 })
 
-type PartnerFormData = z.infer<typeof partnerSchema>
+type PartnerForm = z.infer<typeof partnerSchema>
 
 export default function NewPartnerPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
-  
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors }
-  } = useForm<PartnerFormData>({
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<PartnerForm>({
     resolver: zodResolver(partnerSchema)
   })
 
-  const onSubmit = async (data: PartnerFormData) => {
-    setIsSubmitting(true)
+  useEffect(() => {
+    const checkAuth = () => {
+      if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('auth-token')
+        if (!token) {
+          router.push('/login')
+          return false
+        }
+      }
+      return true
+    }
+
+    checkAuth()
+  }, [router])
+
+  const onSubmit = async (data: PartnerForm) => {
     try {
-      // Convert specialties string to array
+      setIsSubmitting(true)
+      
       const partnerData = {
         ...data,
-        specialties: data.specialties ? data.specialties.split(',').map(s => s.trim()).filter(Boolean) : []
+        specialties: data.specialties ? data.specialties.split(',').map(s => s.trim()) : []
       }
-      
+
       await partnersApi.create(partnerData)
       router.push('/partners')
-    } catch (error: unknown) {
+    } catch (error) {
       console.error('Error creating partner:', error)
-      const errorMessage = error instanceof Error && 'response' in error 
-        ? (error as { response?: { data?: { error?: string } } }).response?.data?.error || 'Failed to create partner'
+      const errorMessage = error instanceof Error && error.message.includes('duplicate')
+        ? 'A partner with this email already exists'
         : 'Failed to create partner'
       alert(errorMessage)
     } finally {
@@ -63,9 +76,9 @@ export default function NewPartnerPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <DashboardLayout>
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <div className="bg-white shadow-sm border-b">
         <div className="px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center gap-4">
             <Button
@@ -83,7 +96,7 @@ export default function NewPartnerPage() {
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Main content */}
       <main className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
@@ -91,7 +104,7 @@ export default function NewPartnerPage() {
           <CardHeader>
             <CardTitle>Partner Information</CardTitle>
             <CardDescription>
-              Enter the details for your new partner
+              Enter the details for your new business partner
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -99,7 +112,7 @@ export default function NewPartnerPage() {
               {/* Partner Type */}
               <div className="space-y-2">
                 <Label htmlFor="type">Partner Type *</Label>
-                <Select onValueChange={(value) => setValue('type', value as 'interior-designer' | 'builder' | 'architect')}>
+                <Select onValueChange={(value) => setValue('type', value as any)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select partner type" />
                   </SelectTrigger>
@@ -225,6 +238,6 @@ export default function NewPartnerPage() {
           </CardContent>
         </Card>
       </main>
-    </div>
+    </DashboardLayout>
   )
 }

@@ -1,21 +1,44 @@
-MIT License
+iCatalyst End User License Agreement (EULA)
+Version 1.0
+Last Updated: June 15, 2025
 
-Copyright (c) 2025 cornndawwg
+This End User License Agreement ("Agreement") is a legal agreement between you ("Licensee") and Cwell, LLC ("Licensor") governing your use of the iCatalyst software ("Software"). By installing, copying, or otherwise using the Software, you agree to be bound by the terms of this Agreement.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+1. License Grant
+Cwell, LLC hereby grants the Licensee a non-transferable, non-sublicensable, non-exclusive, revocable license to use the Software solely for internal business purposes and in accordance with this Agreement. No other rights are granted.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+2. Restrictions
+Licensee may not:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Copy, distribute, sell, sublicense, lease, or otherwise transfer the Software to any third party.
+
+Modify, reverse engineer, decompile, or disassemble the Software.
+
+Use the Software for any purpose other than as explicitly permitted under this Agreement.
+
+Host, make available, or provide access to the Software as a service (SaaS or PaaS) without prior written consent from Cwell, LLC.
+
+Share, distribute, or publicly display any part of the Software, its source code, or components.
+
+3. Ownership
+The Software is licensed, not sold. Cwell, LLC retains all rights, title, and interest in and to the Software, including all intellectual property rights. The Software is the exclusive property of Cwell, LLC.
+
+4. Confidentiality
+Licensee agrees to treat the Software and any related documentation as confidential and not to disclose it to any third party without the prior written consent of Cwell, LLC.
+
+5. Term and Termination
+This license is effective until terminated. Cwell, LLC may terminate this Agreement at any time if Licensee fails to comply with its terms. Upon termination, Licensee must cease all use of the Software and destroy all copies in its possession.
+
+6. No Warranty
+The Software is provided "AS IS" without warranty of any kind. Cwell, LLC disclaims all warranties, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, and non-infringement.
+
+7. Limitation of Liability
+In no event shall Cwell, LLC be liable for any damages, including but not limited to direct, indirect, incidental, special, or consequential damages arising out of the use or inability to use the Software.
+
+8. Governing Law
+This Agreement shall be governed by and construed in accordance with the laws of the State of Georgia, without regard to its conflict of law principles.
+
+9. Entire Agreement
+This Agreement constitutes the entire agreement between the parties concerning the Software and supersedes all prior or contemporaneous understandings.
+
+By using the Software, you acknowledge that you have read this Agreement, understand it, and agree to be bound by its terms.

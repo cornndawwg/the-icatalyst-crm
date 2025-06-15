@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import DashboardLayout from '@/components/layout/dashboard-layout'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -202,20 +203,12 @@ function FuturePartnersContent() {
   const stats = getEngagementStats()
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <DashboardLayout>
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <div className="bg-white shadow-sm border-b">
         <div className="px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => router.push('/dashboard')}
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              <div>
+            <div>
                 <h1 className="text-2xl font-bold text-gray-900">Future Partners</h1>
                 <p className="text-sm text-gray-600 mt-1">
                   Nurture discovered partners through email campaigns
@@ -613,19 +606,21 @@ function FuturePartnersContent() {
           </TabsContent>
         </Tabs>
       </main>
-    </div>
+    </DashboardLayout>
   )
 }
 
 export default function FuturePartnersPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading future partners...</p>
+      <DashboardLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading future partners...</p>
+          </div>
         </div>
-      </div>
+      </DashboardLayout>
     }>
       <FuturePartnersContent />
     </Suspense>
